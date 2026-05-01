@@ -1,0 +1,34 @@
+\subsubsection{Hiện thực Accumulator Register}
+
+Trong kiến trúc CPU RISC này, Thanh ghi tích lũy (Accumulator Register) đóng vai trò trung tâm trong luồng dữ liệu, chịu trách nhiệm lưu trữ toán hạng và kết quả tính toán 32-bit từ khối ALU. Thanh ghi được thiết kế dưới dạng mạch dãy (Sequential Logic) với tín hiệu Reset đồng bộ nhằm đảm bảo tính ổn định và nhịp nhàng của toàn hệ thống.
+
+\textbf{Mã nguồn Verilog hiện thực module Accumulator Register:}
+
+\begin{lstlisting}[language=Verilog, caption={Mã nguồn hiện thực module Accumulator Register}, label={lst:accum_code}]
+module Accumulator (
+    input         clk,        
+    input         rst,        
+    input         load_en,    
+    input  [31:0] D,          
+    output reg [31:0] Q       //(inA cho ALU)
+);
+
+    
+    always @(posedge clk) begin
+        if (rst) begin
+            Q <= 32'b0;          
+        end 
+        else if (load_en) begin
+            Q <= D;              
+        end
+        
+    end
+
+endmodule
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý:}
+\begin{itemize}
+    \item \textbf{Đồng bộ hóa tuyệt đối:} Khối \texttt{always} chỉ nhạy với sườn lên của xung nhịp (\texttt{posedge clk}). Tín hiệu \texttt{rst} được kiểm tra ngay bên trong cấu trúc điều kiện của khối \texttt{always}, đảm bảo mạch chỉ thực hiện việc xóa dữ liệu (\texttt{Q <= 0}) khi có sườn xung clock tác động (Reset đồng bộ).
+    \item \textbf{Cơ chế chốt dữ liệu:} Khi tín hiệu cho phép \texttt{load\_en} ở mức logic 0, thanh ghi tự động duy trì trạng thái cũ. Điều này giúp hệ thống giữ vững kết quả tính toán, ngăn chặn việc dữ liệu bị ghi đè bởi các tín hiệu rác trên đường dẫn từ ALU trong các chu kỳ máy không có yêu cầu cập nhật.
+\end{itemize}

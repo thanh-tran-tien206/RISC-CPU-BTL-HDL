@@ -1,0 +1,109 @@
+\subsubsection{Testbench và Kết quả mô phỏng Accumulator Register}
+
+\textbf{a. Mô tả kịch bản kiểm chứng (Testbench)} \\
+Môi trường mô phỏng được thiết lập nhằm đánh giá khả năng lưu trữ, chốt dữ liệu và đặc tính Reset đồng bộ của Thanh ghi tích lũy. Kịch bản bơm tín hiệu (stimulus) bao gồm các trường hợp:
+\begin{itemize}
+    \item Kích hoạt tín hiệu \texttt{rst} độc lập để kiểm tra mạch có thực sự chờ đến sườn lên của \texttt{clk} mới thực hiện xóa dữ liệu hay không.
+    \item Đưa dữ liệu ngẫu nhiên vào ngõ \texttt{D} nhưng tắt tín hiệu \texttt{load\_en} để kiểm chứng tính năng giữ trạng thái cũ (chốt dữ liệu).
+    \item Bật đồng thời \texttt{load\_en} và \texttt{rst} để kiểm tra mức độ ưu tiên của tín hiệu điều khiển.
+\end{itemize}
+
+\textbf{b. Mã nguồn Testbench (Verilog)}
+\begin{lstlisting}[language=Verilog, caption={Mã nguồn Testbench kiểm tra Accumulator Register}]
+`timescale 1ns / 1ps
+
+module tb_Accumulator();
+
+    reg clk;
+    reg rst;
+    reg load_en;
+    reg [31:0] D;
+    wire [31:0] Q;
+
+ 
+    Accumulator uut (
+        .clk(clk),
+        .rst(rst),
+        .load_en(load_en),
+        .D(D),
+        .Q(Q)
+    );
+
+   
+    always #5 clk = ~clk;
+
+    initial begin
+       
+        $display("-----------");
+        $display("Time|rst|load_en|D(hex)|Q(hex)");
+        $display("-----------");
+        $monitor("%10t|%b|%b|%h|%h",$time,rst,load_en,D,Q);
+
+       
+        clk = 0; rst = 0; load_en = 0; D = 32'h0;
+
+       
+        #12; rst = 1;     
+        #10.1; rst = 0;    
+
+      
+        #10.1; D = 32'hAAAA_5555; load_en = 1; 
+        #10.1; load_en = 0;                    
+        
+      
+        #10.1; D = 32'h1234_ABCD;
+        #10.1; 
+
+      
+        #10.1; load_en = 1;
+        #10.1; load_en = 0;
+
+      
+        #10.1; D = 32'hFFFF_FFFF; load_en = 1; rst = 1; 
+        #10.1; rst = 0; load_en = 0; 
+
+        #20;
+        $display("-------------");
+        $display("Hoan thanh mo phong Accumulator!");
+        $finish;
+    end
+
+endmodule
+\end{lstlisting}
+
+\textbf{c. Sơ đồ mạch RTL (RTL Schematic)} \\
+Sơ đồ mạch logic sau quá trình tổng hợp cho thấy Accumulator được hiện thực bằng một tập hợp các Flip-Flop D (D-FF) có tích hợp bộ dồn kênh (MUX) điều khiển qua chân Enable và Reset.
+
+\begin{figure}[H]
+    \centering
+    % Thay 'acc_rtl_schematic.png' bang ten file anh so do mach cua ban
+    \includegraphics[width=0.7\textwidth]{machacc.png} 
+    \caption{Sơ đồ mạch logic (RTL Schematic) của khối Accumulator}
+    \label{fig:acc_rtl}
+\end{figure}
+
+\textbf{d. Kết quả xuất ra màn hình (Console Output)} \\
+Quá trình thay đổi tín hiệu được tự động ghi nhận trên cửa sổ Console.
+
+\begin{figure}[H]
+    \centering
+    % Thay 'acc_console.png' bang ten file anh console cua ban
+    \includegraphics[width=0.8\textwidth]{consoleaccum.png} 
+    \caption{Kết quả chạy Testbench Accumulator trên Console}
+    \label{fig:acc_console}
+\end{figure}
+
+Dựa vào log hiển thị, ngõ ra \texttt{Q} chỉ phản hồi với ngõ vào \texttt{D} khi có lệnh \texttt{load\_en}. Trong trường hợp cả \texttt{rst} và \texttt{load\_en} cùng ở mức cao, thanh ghi lập tức ưu tiên đưa dữ liệu về mức \texttt{0}, tuân thủ đúng mức ưu tiên trong cấu trúc \texttt{if-else} đã thiết kế.
+
+\textbf{e. Giản đồ sóng (Waveform)} \\
+Giản đồ thời gian cung cấp minh chứng trực quan nhất cho tính đồng bộ của thanh ghi.
+
+\begin{figure}[H]
+    \centering
+    % Thay 'acc_waveform.png' bang ten file anh waveform cua ban
+    \includegraphics[width=\textwidth]{waveacc.png} 
+    \caption{Giản đồ thời gian (Waveform) mô phỏng khối Accumulator}
+    \label{fig:acc_waveform}
+\end{figure}
+
+Quan sát trên giản đồ, tại thời điểm tín hiệu \texttt{rst} chuyển lên mức 1, dữ liệu ngõ ra \texttt{Q} không lập tức bị xóa đi mà duy trì trạng thái cho đến khi gặp cạnh lên tiếp theo của tín hiệu \texttt{clk}. Điều này chứng minh quá trình loại bỏ sự kiện \texttt{posedge rst} khỏi danh sách độ nhạy đã xử lý thành công yêu cầu thiết kế Reset đồng bộ.

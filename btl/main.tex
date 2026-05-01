@@ -1,0 +1,86 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{tabularx} % Thư viện giúp bảng tự động co giãn
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage[T5]{fontenc} % Hỗ trợ tiếng Việt chuẩn
+\usepackage[vietnamese]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage[table]{xcolor} % Hỗ trợ đổ màu bảng [table] rất quan trọng
+\usepackage{tikz}
+\usepackage{bytefield}    % Vẽ sơ đồ bit chuyên nghiệp (Phần 2 cần)
+\usepackage{caption}      % Quản lý chú thích hình ảnh/bảng biểu
+\usepackage[hidelinks]{hyperref}     % Tạo mục lục có thể nhấn vào được (link)
+
+\usepackage{listings}
+\usepackage{xcolor} % Để tô màu cho code
+
+% Cấu hình cơ bản cho khối code Verilog
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    frame=single,
+    breaklines=true
+}
+
+\usetikzlibrary{calc}
+
+
+\definecolor{BKB}{RGB}{0, 84, 166} 
+\geometry{
+    a4paper,
+    left=30mm,
+    right=20mm,
+    top=20mm,
+    bottom=20mm
+}
+
+
+\renewcommand{\arraystretch}{1.2} 
+\linespread{1.2} 
+
+
+\begin{document}
+
+    
+    \input{bia.tex}
+    
+    \newpage
+    
+    \pagenumbering{roman} 
+    \tableofcontents
+    \newpage
+
+   
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+
+    
+    \input{phan1.tex}
+    \newpage
+
+    
+    \input{phan2.tex}
+    \newpage
+
+   
+    \input{phan3.tex}
+    \newpage
+
+    \input{phan4.tex}
+    \newpage
+
+    \input{phan5.tex}
+    \newpage
+
+    \input{phan6.tex}
+    \newpage
+
+
+\end{document}

@@ -1,0 +1,41 @@
+\section{ KẾT LUẬN}
+
+
+\subsection{Kết quả đạt được}
+Thông qua quá trình nghiên cứu và thực hiện đồ án, nhóm đã đạt được các kết quả trọng tâm sau:
+\begin{itemize}
+    \item \textbf{Thiết kế hệ thống:} Hoàn thành việc thiết kế và mô phỏng hệ thống RISC CPU đơn giản dựa trên ngôn ngữ mô tả phần cứng Verilog. Hệ thống hỗ trợ tập lệnh gồm 8 lệnh nền tảng (HLT, SKZ, ADD, AND, XOR, LDA, STO, JMP), đáp ứng các yêu cầu về tính toán số học, logic và điều khiển luồng.
+    \item \textbf{Kiến trúc phân khối:} Xây dựng thành công các khối chức năng chuyên biệt bao gồm: Program Counter, Address Mux, ALU, Controller (với FSM 8 trạng thái), Accumulator Register, Instruction Register và Memory.
+    \item \textbf{Năng lực chuyên môn:} Củng cố tư duy về sự tương tác dữ liệu và tín hiệu điều khiển trong kiến trúc máy tính thực tế. Đồng thời, nhóm đã làm chủ các kỹ năng lập trình HDL, xây dựng môi trường kiểm chứng (Testbench) và phân tích giản đồ thời gian (Waveform) để tối ưu hóa mạch số.
+\end{itemize}
+
+\subsection{Khó khăn và Thách thức}
+Trong quá trình triển khai, nhóm đã đối mặt và giải quyết các thách thức kỹ thuật sau:
+\begin{itemize}
+    \item \textbf{Mô hình hóa bộ điều khiển:} Việc thiết kế máy trạng thái hữu hạn (FSM) cho Controller đòi hỏi sự chính xác tuyệt đối trong việc phối hợp 7 tín hiệu đầu ra cho từng Opcode. Nhóm đã khắc phục bằng cách chuẩn hóa bảng trạng thái chi tiết trước khi hiện thực mã nguồn.
+    \item \textbf{Kiểm chứng và Debug:} Quá trình xác minh lỗi trên quy mô hệ thống phức tạp đòi hỏi khả năng phân tích Waveform sâu. Giải pháp được áp dụng là chiến lược "Unit Testing" – kiểm tra độc lập từng module trước khi tiến hành tích hợp hệ thống (Integration).
+    \item \textbf{Đồng bộ hóa tín hiệu:} Đảm bảo tính toàn vẹn của dữ liệu và tránh các hiện tượng xung đột trạng thái (race condition) thông qua việc kiểm soát chặt chẽ các thời điểm lấy mẫu dữ liệu (Timing).
+\end{itemize}
+
+\subsection{Hướng phát triển và Mở rộng}
+Nhằm nâng cao hiệu suất và tính ứng dụng của kiến trúc, nhóm đề xuất các hướng phát triển tiếp theo:
+\begin{itemize}
+    \item \textbf{Nâng cấp tập lệnh (ISA):} Mở rộng khả năng xử lý bằng cách tích hợp các phép toán phức tạp (nhân/chia), xử lý số dấu phẩy động và các chế độ địa chỉ gián tiếp.
+    \item \textbf{Tối ưu hóa kiến trúc Pipeline:} Triển khai cấu trúc đường ống nhiều giai đoạn (IF, ID, EX, MEM, WB) nhằm tăng cường thông lượng (throughput) và khai thác tối đa tài nguyên phần cứng.
+    \item \textbf{Triển khai phần cứng thực tế:} Thực hiện tổng hợp và nạp thiết kế lên bo mạch FPGA (như Arty Z7) để đánh giá các thông số về tài nguyên thực tế và tần số hoạt động tối đa. Đồng thời phát triển trình hợp dịch (Assembler) riêng để hỗ trợ lập trình mức cao cho CPU.
+\end{itemize}
+
+\subsection{Bảng phân chia công việc}
+\begin{table}[H]
+\centering
+\caption{Bảng phân chia công việc thực hiện đồ án}
+\renewcommand{\arraystretch}{1.5}
+% Sử dụng >{\raggedright\arraybackslash} để căn lề trái trong ô, giúp hết Underfull
+\begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|c|>{\raggedright\arraybackslash}p{6cm}|c|}
+\hline
+\textbf{STT} & \textbf{Họ và tên} & \textbf{MSSV} & \textbf{Nhiệm vụ} & \textbf{Hoàn thành} \\ \hline
+1 & PHẠM ĐỖ HỒNG PHÚC & 2510359 & Thiết kế \& code Verilog khối ALU và Accumulator Register. Viết testbench tương ứng.Tổng hợp và ghi báo cáo latex. & 100\% \\ \hline
+2 & TRẦN TIẾN THÀNH & 2413182 &  Thiết kế \& code Verilog khối Controller. Tích hợp Top-level và viết testbench toàn hệ thống. & 100\% \\ \hline
+3 & VÕ LÊ PHÚC THỊNH & 2510382 & Thiết kế \& code Verilog khối Memory, PC, Address Mux và IR. Viết testbench tương ứng. & 100\% \\ \hline
+\end{tabularx}
+\end{table}

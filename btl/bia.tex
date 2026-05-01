@@ -1,0 +1,86 @@
+\begin{titlepage}
+    \begin{tikzpicture}[remember picture, overlay]
+        % Khung viền
+        \coordinate (NW) at ($(current page.north west) + (2.5cm,-1.5cm)$);
+        \coordinate (SE) at ($(current page.south east) + (-1.5cm,1.5cm)$);
+        
+        \draw[BKB, line width=2.5pt] (NW) rectangle (SE);
+        \draw[BKB, line width=0.8pt] ($(NW) + (0.15,-0.15)$) rectangle ($(SE) + (-0.15,0.15)$);
+        
+        \def\side{0.6cm}
+        \draw[BKB, line width=2pt] ($(NW) + (0,-\side)$) -- (NW) -- ($(NW) + (\side,0)$);
+        \draw[BKB, line width=2pt] ($(NW |- SE) + (0,\side)$) -- (NW |- SE) -- ($(NW |- SE) + (\side,0)$);
+        \draw[BKB, line width=2pt] ($(SE |- NW) + (-\side,0)$) -- (SE |- NW) -- ($(SE |- NW) + (0,-\side)$);
+        \draw[BKB, line width=2pt] ($(SE) + (0,\side)$) -- (SE) -- ($(SE) + (-\side,0)$);
+    \end{tikzpicture}
+    
+    \begin{center}
+        {\fontsize{14}{16}\selectfont \textbf{ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH} \par}
+        {\fontsize{14}{16}\selectfont \textbf{TRƯỜNG ĐẠI HỌC BÁCH KHOA} \par}
+        {\fontsize{14}{16}\selectfont \textbf{KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH} \par}
+        
+        \vspace{0.8cm}
+        
+        \ifcsname includegraphics\endcsname
+            \includegraphics[height=3.2cm]{logo} 
+        \fi
+        
+        \vspace{0.8cm}
+        
+        % Phần Môn học, Mã môn, Học kỳ
+        {\fontsize{13}{15}\selectfont \textbf{MÔN HỌC: THIẾT KẾ LUẬN LÝ VỚI HDL} \par}
+        {\fontsize{13}{15}\selectfont \textbf{MÃ MÔN HỌC: CO1025} \par}
+        {\fontsize{13}{15}\selectfont \textbf{HỌC KỲ: 252} \par}
+        
+        \vspace{0.8cm}
+        {\fontsize{16}{18}\selectfont BÁO CÁO ĐỒ ÁN MÔN HỌC \par}
+        
+        \vspace{0.4cm}
+        \begin{tikzpicture}
+            \draw[BKB, line width=1.5pt] (0,0) -- (12,0);
+        \end{tikzpicture}
+        \vspace{0.4cm}
+        
+        {\fontsize{22}{26}\selectfont \textbf{THIẾT KẾ RISC CPU ĐƠN GIẢN} \par}
+        
+        \vspace{0.4cm}
+        \begin{tikzpicture}
+            \draw[BKB, line width=1.5pt] (0,0) -- (12,0);
+        \end{tikzpicture}
+    \end{center}
+    
+    \vspace{1cm}
+    
+    
+    \begin{center}
+        \renewcommand{\arraystretch}{1.5}
+        \begin{tabular}{l l}
+            \textbf{Giảng viên hướng dẫn:} & HUỲNH PHÚC NGHỊ \\
+            \textbf{Lớp:}                  & L01 \\
+            \textbf{Nhóm thực hiện:}       & 9 \\
+        \end{tabular}
+    \end{center}
+    
+    \vfill
+    
+    % Danh sách thành viên
+    \begin{center}
+        \textbf{DANH SÁCH THÀNH VIÊN} \\
+        \vspace{0.3cm}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{|c|l|c|}
+            \hline
+            \textbf{STT} & \textbf{Họ và tên} & \textbf{MSSV} \\ \hline
+            1 & PHẠM ĐỖ HỒNG PHÚC & 2510359 \\ \hline
+            2 & TRẦN TIẾN THÀNH & 2413182 \\ \hline
+            3 & VÕ LÊ PHÚC THỊNH & 2510382 \\ \hline
+        \end{tabular}
+    \end{center}
+
+    \vfill 
+    
+    \begin{center}
+        {\fontsize{13}{15}\selectfont TP. HỒ CHÍ MINH, THÁNG 4 NĂM 2026}
+    \end{center}
+
+\end{titlepage}

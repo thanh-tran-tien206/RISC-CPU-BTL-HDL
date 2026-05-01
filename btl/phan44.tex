@@ -1,0 +1,42 @@
+
+
+Khối ALU được hiện thực bằng ngôn ngữ mô tả phần cứng Verilog. Module nhận hai toán hạng đầu vào 32-bit (\texttt{inA}, \texttt{inB}) và tín hiệu điều khiển 3-bit (\texttt{opcode}). Dựa vào \texttt{opcode}, khối ALU sẽ sử dụng cấu trúc \texttt{case} để định tuyến dữ liệu đầu ra hoặc thực hiện các phép toán số học/logic tương ứng.
+
+\textbf{Mã nguồn Verilog hiện thực khối ALU:}
+
+\begin{lstlisting}[language=Verilog, caption={Mã nguồn hiện thực module ALU}, label={lst:alu_code}]
+module ALU (
+    input  [31:0] inA,      
+    input  [31:0] inB,      
+    input  [2:0]  opcode,   
+    output reg [31:0] out,  
+    output        is_zero   
+);
+
+    localparam HLT = 3'b000, SKZ = 3'b001, ADD = 3'b010, AND = 3'b011,
+               XOR = 3'b100, LDA = 3'b101, STO = 3'b110, JMP = 3'b111;
+
+    always @(*) begin
+        case (opcode)
+            HLT, SKZ, JMP, STO : out = inA; 
+            ADD : out = inA + inB;
+            AND : out = inA & inB;
+            XOR : out = inA ^ inB;
+            LDA : out = inB;
+            default: out = inA;
+        endcase
+    end
+
+  
+    assign is_zero = (inA == 32'b0); 
+
+endmodule
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý chi tiết:}
+\begin{itemize}
+    \item \textbf{Nhóm lệnh tính toán (ADD, AND, XOR):} ALU thực hiện trực tiếp các phép toán tương ứng giữa hai toán hạng \texttt{inA} và \texttt{inB}. Việc tổng hợp (synthesis) các toán tử \texttt{+}, \texttt{\&}, \texttt{\textasciicircum} sẽ tự động tạo ra các bộ cộng và cổng logic phần cứng tương ứng.
+    \item \textbf{Lệnh nạp dữ liệu (LDA):} Dữ liệu từ ngõ vào \texttt{inB} (thường nối với bộ nhớ dữ liệu) được truyền trực tiếp ra \texttt{out} để chuẩn bị nạp vào thanh ghi Accumulator.
+    \item \textbf{Nhóm lệnh truyền thẳng (HLT, SKZ, JMP, STO):} Các lệnh này không yêu cầu tính toán. ALU sẽ đóng vai trò như một đường dẫn trong suốt, truyền trực tiếp giá trị của \texttt{inA} ra ngõ \texttt{out}. Việc gom nhóm các case này giúp phần mềm tổng hợp tối ưu hóa bộ dồn kênh (MUX), làm giảm diện tích mạch và rút ngắn trễ truyền (propagation delay).
+    \item \textbf{Tín hiệu cờ \texttt{is\_zero}:} Tín hiệu này được thiết kế bằng lệnh \texttt{assign} nằm ngoài khối \texttt{always}, giúp nó hoạt động hoàn toàn độc lập và bất đồng bộ. Tín hiệu này giám sát liên tục ngõ vào \texttt{inA}; nếu $\texttt{inA} = 0$, cờ sẽ lập tức bật lên mức 1 mà không cần chờ phép toán bên trong ALU hoàn tất, đáp ứng đúng đặc tả của lệnh nhảy \texttt{SKZ}.
+\end{itemize}

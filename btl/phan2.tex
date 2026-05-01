@@ -1,0 +1,143 @@
+\section{ LÝ THUYẾT SƠ LƯỢC}
+
+\subsection{Kiến trúc RISC}
+RISC (Reduced Instruction Set Computer – Máy tính với tập lệnh rút gọn) là triết lý thiết kế bộ vi xử lý hướng tới việc đơn giản hóa tập lệnh, giúp mỗi lệnh có thể thực thi trong một chu kỳ đồng hồ (single clock cycle). Kiến trúc RISC xuất hiện từ những năm 1980 với các dự án tiên phong tại Đại học Berkeley và Stanford, trở thành nền tảng cho nhiều kiến trúc hiện đại ngày nay.
+
+\textbf{Đặc điểm chính của kiến trúc RISC bao gồm:}
+\begin{itemize}
+    \item \textbf{Tập lệnh ít và đồng đều:} Mỗi lệnh có độ dài cố định (thường 32-bit), giúp giải mã lệnh nhanh hơn và đơn giản hóa phần cứng giải mã.
+    \item \textbf{Chế độ địa chỉ đơn giản:} Chỉ hỗ trợ Load/Store để truy cập bộ nhớ; các phép toán được thực thi trực tiếp trên thanh ghi.
+    \item \textbf{Nhiều thanh ghi đa năng:} Giảm thiểu số lần truy cập bộ nhớ, tăng tốc độ xử lý.
+    \item \textbf{Pipeline hiệu quả:} Cấu trúc lệnh đều đặn, cố định tạo điều kiện thuận lợi cho xử lý đường ống (pipelining).
+\end{itemize}
+
+\textbf{Ưu điểm:}
+\begin{itemize}
+    \item Tốc độ thực thi lệnh cao do mỗi lệnh hoàn thành trong một chu kỳ đồng hồ.
+    \item Thiết kế mạch đơn giản hơn, dễ kiểm tra và tối ưu hóa.
+    \item Tiêu thụ năng lượng thấp hơn so với CISC, phù hợp với thiết bị di động và nhúng.
+\end{itemize}
+
+\textbf{Nhược điểm:}
+\begin{itemize}
+    \item Chương trình máy thường dài hơn do mỗi tác vụ phức tạp cần được phân rã thành nhiều lệnh đơn giản.
+    \item Yêu cầu nhiều thanh ghi hơn, làm tăng diện tích chip.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Tiêu chí} & \textbf{RISC} & \textbf{CISC} \\ \hline
+Tập lệnh & Ít, đơn giản, cố định & Nhiều, phức tạp, biến thiên \\ \hline
+Độ dài lệnh & Cố định & Thay đổi \\ \hline
+Chu kỳ thực thi & 1 chu kỳ/lệnh & Nhiều chu kỳ/lệnh \\ \hline
+Bộ giải mã & Đơn giản & Phức tạp \\ \hline
+Thanh ghi & Nhiều & Ít hơn \\ \hline
+Pipeline & Dễ triển khai & Khó triển khai \\ \hline
+\end{tabular}
+\caption{So sánh kiến trúc RISC và CISC}
+\end{table}
+
+\subsection{Tổ chức CPU đơn giản}
+Một CPU đơn giản bao gồm các khối chức năng chính sau:
+\begin{itemize}
+    \item \textbf{ALU (Arithmetic Logic Unit):} Thực thi các phép toán số học (cộng, trừ) và logic (AND, XOR, NOT) trên dữ liệu đầu vào.
+    \item \textbf{Register File:} Tập các thanh ghi tốc độ cao dùng lưu trữ tạm thời toán hạng và kết quả trung gian trong quá trình xử lý.
+    \item \textbf{Control Unit:} Khối điều khiển, giải mã opcode và phát sinh các tín hiệu điều khiển tương ứng cho toàn bộ hệ thống.
+    \item \textbf{Program Counter (PC):} Thanh ghi lưu địa chỉ của lệnh tiếp theo cần thực thi; tự động tăng sau mỗi chu kỳ lệnh.
+    \item \textbf{Instruction Register (IR):} Lưu mã lệnh vừa được nạp từ bộ nhớ, phục vụ cho quá trình giải mã.
+    \item \textbf{Memory:} Bộ nhớ lưu trữ cả chương trình (instruction memory) và dữ liệu (data memory).
+\end{itemize}
+
+\textbf{Chu trình hoạt động Fetch – Decode – Execute (FDE):}
+\begin{center}
+    \begin{minipage}{0.8\textwidth}
+        \begin{enumerate}
+            \item \textbf{[Fetch]:} Nạp lệnh từ bộ nhớ vào IR theo địa chỉ PC.
+            \item \textbf{[Decode]:} Control Unit giải mã lệnh, phát tín hiệu điều khiển.
+            \item \textbf{[Execute]:} ALU thực thi phép toán, kết quả lưu vào Accumulator hoặc bộ nhớ.
+            \item \textbf{[Update]:} $PC \leftarrow PC + 1$ (hoặc địa chỉ nhảy nếu gặp JMP/SKZ).
+        \end{enumerate}
+    \end{minipage}
+\end{center}
+
+Trong thiết kế RISC CPU đơn giản này, \textbf{Accumulator} đóng vai trò là thanh ghi trung gian chính, lưu giữ toán hạng và kết quả của các phép toán. \textbf{Address Mux} chịu trách nhiệm chọn lựa địa chỉ giữa Instruction Fetch và Operand Fetch tùy theo trạng thái hiện tại của bộ điều khiển. Toàn bộ chu kỳ hoạt động của CPU được đồng bộ hóa bởi xung clock, đảm bảo các khối phối hợp làm việc chính xác theo trình tự quy định.
+
+\subsection{Tập lệnh và mã hóa lệnh}
+CPU sử dụng định dạng lệnh 8-bit, trong đó 3-bit cao là opcode và 5-bit thấp là toán hạng (địa chỉ):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\ \hline
+\multicolumn{3}{|c|}{\textbf{Opcode (3 bits)}} & \multicolumn{5}{c|}{\textbf{Operand (5 bits)}} \\ \hline
+\end{tabular}
+\caption{Định dạng mã hóa lệnh 8-bit}
+\end{table}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{|l|c|l|l|}
+\hline
+\textbf{Opcode} & \textbf{Mã} & \textbf{Hoạt động} & \textbf{Kết quả (Output)} \\ \hline
+\textbf{HLT} & 000 & Dừng hoạt động chương trình & inA \\ \hline
+\textbf{SKZ} & 001 & Nếu ALU = 0, bỏ qua lệnh tiếp theo & inA \\ \hline
+\textbf{ADD} & 010 & Cộng Accumulator với bộ nhớ & inA + inB \\ \hline
+\textbf{AND} & 011 & AND Accumulator với bộ nhớ & inA AND inB \\ \hline
+\textbf{XOR} & 100 & XOR Accumulator với bộ nhớ & inA XOR inB \\ \hline
+\textbf{LDA} & 101 & Đọc giá trị từ địa chỉ vào Accumulator & inB \\ \hline
+\textbf{STO} & 110 & Ghi Accumulator vào địa chỉ bộ nhớ & inA \\ \hline
+\textbf{JMP} & 111 & Nhảy không điều kiện đến địa chỉ đích & inA \\ \hline
+\end{tabular}
+\caption{Tập lệnh của RISC CPU}
+\end{table}
+
+\subsection{Ứng dụng thực tế của kiến trúc RISC}
+Kiến trúc RISC không chỉ là lý thuyết mà đã trở thành tiêu chuẩn công nghiệp, thống trị từ thị trường thiết bị di động đến siêu máy tính nhờ hiệu quả năng lượng và khả năng tối ưu hóa pipeline.
+
+\begin{itemize}
+    \item \textbf{Hệ sinh thái ARM (Advanced RISC Machine):} 
+    Đây là kiến trúc RISC phổ biến nhất thế giới.
+    \begin{itemize}
+        \item \textit{Thiết bị di động:} Chiếm hơn 95\% thị phần smartphone toàn cầu (Qualcomm Snapdragon, Apple A-series, MediaTek Dimensity).
+        \item \textit{Máy tính cá nhân:} Bước ngoặt với Apple Silicon (M1, M2, M3 series), chứng minh RISC có thể vượt mặt CISC (x86) về hiệu năng trên mỗi Watt.
+        \item \textit{Điện toán đám mây:} Các bộ vi xử lý như AWS Graviton hay Ampere Altra đang dần thay thế CPU truyền thống trong các trung tâm dữ liệu.
+    \end{itemize}
+
+    \item \textbf{Kiến trúc MIPS (Microprocessor without Interlocked Pipeline Stages):}
+    Dù không còn thống trị ở mảng người dùng cuối, MIPS vẫn giữ vai trò quan trọng:
+    \begin{itemize}
+        \item \textit{Thiết bị mạng:} Phổ biến trong các bộ định tuyến (Router), thiết bị chuyển mạch (Switch) của Cisco, Linksys và TP-Link.
+        \item \textit{Hệ thống nhúng:} Sử dụng trong các bộ điều khiển công nghiệp, máy chơi game cổ điển (PS1, N64) và các thiết bị IoT yêu cầu độ ổn định cao.
+        \item \textit{Giáo dục:} Là mô hình chuẩn để giảng dạy môn Kiến trúc máy tính nhờ cấu trúc pipeline 5 giai đoạn kinh điển.
+    \end{itemize}
+
+    \item \textbf{RISC-V (Kiến trúc tập lệnh mở):}
+    Được xem là tương lai của ngành bán dẫn nhờ tính tự do và không tốn phí bản quyền.
+    \begin{itemize}
+        \item \textit{Tùy biến chuyên dụng:} Các công ty như Western Digital và NVIDIA sử dụng RISC-V để thiết kế các bộ điều khiển (controller) tùy chỉnh cho ổ cứng và card đồ họa.
+        \item \textit{Trí tuệ nhân tạo (AI):} RISC-V cho phép thêm các tập lệnh tăng tốc AI riêng biệt, giúp tối ưu hóa việc xử lý dữ liệu lớn.
+        \item \textit{Chủ quyền công nghệ:} Các quốc gia và tập đoàn lớn đang đầu tư vào RISC-V để giảm sự phụ thuộc vào các chuẩn đóng như ARM hay x86.
+    \end{itemize}
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Kiến trúc} & \textbf{Thị trường trọng tâm} & \textbf{Đại diện tiêu biểu} \\ \hline
+\textbf{ARM} & Di động, Laptop, Server & iPhone, MacBook M3, AWS Graviton \\ \hline
+\textbf{MIPS} & Mạng, Nhúng, Giáo dục & Router WiFi, Microchip PIC32 \\ \hline
+\textbf{RISC-V} & IoT, AI, Chip tùy biến & SiFive Intelligence, WD SweRV \\ \hline
+\end{tabular}
+\caption{Tóm tắt các hệ sinh thái RISC tiêu biểu}
+\end{table}

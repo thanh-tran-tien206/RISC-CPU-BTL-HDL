@@ -1,0 +1,81 @@
+
+
+\section{GIỚI THIỆU}
+
+RISC (Reduced Instruction Set Computer) là một phương pháp thiết kế bộ xử lý hiện đại, tập trung vào việc giảm thiểu tập lệnh nhằm tăng tốc độ thực thi. Trong đề tài này, nhóm thực hiện thiết kế một RISC CPU đơn giản với 3-bit opcode và 5-bit toán hạng, tương ứng với 8 loại câu lệnh và 32 không gian địa chỉ.
+
+\subsection{Tổng quan đề tài}
+Trong bối cảnh ngành công nghiệp vi mạch và hệ thống nhúng đang phát triển mạnh mẽ, việc nắm vững nguyên lý thiết kế bộ xử lý từ cấp độ phần cứng là một nền tảng quan trọng đối với mỗi kỹ sư điện tử và kỹ thuật máy tính. Đề tài "Thiết kế RISC CPU đơn giản" được thực hiện nhằm mục tiêu xây dựng một bộ xử lý thu gọn, có thể mô phỏng và kiểm chứng được, đủ để minh họa toàn bộ vòng đời thực thi lệnh — từ giai đoạn nạp lệnh (fetch), giải mã (decode), thực thi (execute) đến ghi kết quả (write-back).
+
+CPU được thiết kế trong đề tài sử dụng định dạng lệnh 8-bit, trong đó:
+\begin{itemize}
+    \item \textbf{3-bit opcode:} cho phép mã hóa tối đa 8 lệnh khác nhau.
+    \item \textbf{5-bit toán hạng:} cung cấp 32 địa chỉ khả dụng cho bộ nhớ và thanh ghi.
+\end{itemize}
+
+Kiến trúc tối giản này không chỉ phù hợp với mục tiêu học thuật mà còn phản ánh đúng triết lý cốt lõi của RISC: ít lệnh hơn, thực thi nhanh hơn, phần cứng đơn giản hơn.
+
+\subsection{Mục tiêu của nhóm}
+Nhóm đặt ra các mục tiêu cụ thể sau cho đề tài:
+\begin{enumerate}
+    \item \textbf{Hiểu sâu kiến trúc RISC} — Nắm vững nguyên lý hoạt động của bộ xử lý kiểu RISC, phân biệt với kiến trúc CISC, và hiểu lý do RISC được ưu tiên trong các hệ thống nhúng và thiết bị di động hiện đại.
+    \item \textbf{Thiết kế tập lệnh (ISA)} — Xây dựng một tập lệnh gồm 8 lệnh cơ bản, bao gồm các lệnh số học, logic, truy xuất bộ nhớ và điều khiển luồng chương trình.
+    \item \textbf{Triển khai phần cứng bằng HDL} — Mô tả toàn bộ datapath và bộ điều khiển (control unit) bằng ngôn ngữ mô tả phần cứng (Verilog/VHDL), đảm bảo có thể tổng hợp và mô phỏng được.
+    \item \textbf{Kiểm thử và xác minh} — Viết các testbench để kiểm tra tính đúng đắn của từng khối chức năng (ALU, thanh ghi, bộ nhớ, bộ giải mã lệnh) cũng như toàn bộ hệ thống.
+    \item \textbf{Trình bày kết quả rõ ràng} — Tài liệu hóa quá trình thiết kế, sơ đồ khối, dạng sóng mô phỏng và phân tích kết quả một cách có hệ thống.
+\end{enumerate}
+
+\subsection{Lý do chọn đề tài}
+Nhóm lựa chọn đề tài thiết kế RISC CPU xuất phát từ ba lý do chính:
+
+\textbf{Thứ nhất, giá trị học thuật cao.} Bộ xử lý là trái tim của mọi hệ thống máy tính. Việc tự tay thiết kế một CPU — dù ở quy mô nhỏ — giúp chúng tôi hiểu thực sự cách phần cứng và phần mềm tương tác với nhau, thay vì chỉ tiếp cận lý thuyết qua sách vở.
+
+\textbf{Thứ hai, tính thực tiễn và ứng dụng.} Kiến trúc RISC là nền tảng của các bộ xử lý phổ biến nhất hiện nay như ARM (dùng trong smartphone), RISC-V (đang được áp dụng rộng rãi trong nghiên cứu và công nghiệp). Nắm vững RISC là bước khởi đầu thiết thực để tiếp cận các kiến trúc thực tế này.
+
+\textbf{Thứ ba, phạm vi phù hợp với thời gian và nguồn lực.} Với định dạng lệnh 8-bit và tập lệnh giới hạn ở 8 lệnh, đề tài có độ phức tạp vừa đủ — đủ thách thức để học hỏi sâu, nhưng không quá lớn để mất kiểm soát trong khuôn khổ học phần. Điều này cho phép nhóm tập trung vào chất lượng thiết kế thay vì chạy theo số lượng tính năng.
+
+Với những định hướng trên, nhóm kỳ vọng đề tài không chỉ là một bài tập kỹ thuật hoàn chỉnh, mà còn là nền tảng vững chắc để mỗi thành viên tự tin tiếp cận các hệ thống vi xử lý phức tạp hơn trong tương lai.
+
+\subsection{Công cụ sử dụng}
+\begin{itemize}
+    \item \textbf{Xilinx Vivado Design Suite:} Môi trường thiết kế tích hợp (IDE) chuyên dụng cho FPGA của Xilinx, được sử dụng để viết mã Verilog/VHDL, tổng hợp (synthesis), mô phỏng (simulation) và kiểm tra dạng sóng (waveform) cho toàn bộ thiết kế RISC CPU.
+    \item \textbf{Draw.io (diagrams.net):} Công cụ vẽ sơ đồ trực tuyến miễn phí, được sử dụng để thiết kế và trình bày các sơ đồ khối kiến trúc CPU, datapath, sơ đồ trạng thái (FSM) và các lưu đồ giải thuật trong báo cáo.
+\end{itemize}
+
+\subsection{Thiết bị sử dụng}
+\begin{itemize}
+    \item \textbf{Máy tính cá nhân (PC/Laptop):} Được sử dụng để chạy phần mềm Xilinx Vivado, viết mã HDL, thực hiện mô phỏng và kiểm tra kết quả thiết kế thông qua waveform simulation.
+    \item \textbf{Bo mạch FPGA Digilent Arty Z7:} Bo mạch phát triển tích hợp chip Xilinx Zynq-7000 SoC (XC7Z020), kết hợp giữa bộ xử lý ARM Cortex-A9 và phần logic khả trình FPGA. Bo mạch được sử dụng để nạp (program) và kiểm thử thiết kế RISC CPU trực tiếp trên phần cứng thực tế, xác minh tính đúng đắn của hệ thống ngoài môi trường mô phỏng.
+\end{itemize}
+
+\subsection{Các chức năng của sản phẩm}
+Hệ thống RISC CPU được thiết kế bao gồm các chức năng cốt lõi sau:
+\begin{itemize}
+    \item \textbf{Nạp lệnh (Instruction Fetch):} Lấy lệnh tiếp theo từ bộ nhớ.
+    \item \textbf{Giải mã lệnh (Instruction Decode):} Phân tích mã lệnh để xác định thao tác cần thực hiện.
+    \item \textbf{Lấy dữ liệu toán hạng (Operand Fetch):} Truy xuất dữ liệu từ bộ nhớ (nếu cần).
+    \item \textbf{Thực thi câu lệnh (Execute):} Xử lý các phép toán thông qua khối ALU.
+    \item \textbf{Lưu trữ kết quả (Store):} Ghi dữ liệu về bộ nhớ hoặc Accumulator.
+\end{itemize}
+
+\vspace{0.3cm}
+\noindent \textbf{Tập lệnh hỗ trợ:} Hệ thống được thiết kế để tự động dừng chương trình khi gặp lệnh HALT và hỗ trợ 8 lệnh cơ bản như bảng sau:
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|c|c|l|}
+        \hline
+        \textbf{STT} & \textbf{Lệnh} & \textbf{Chức năng} \\ \hline
+        1 & \texttt{HLT} & Dừng chương trình \\ \hline
+        2 & \texttt{SKZ} & Bỏ qua lệnh tiếp theo nếu Accumulator = 0 \\ \hline
+        3 & \texttt{ADD} & Cộng dữ liệu \\ \hline
+        4 & \texttt{AND} & Phép toán AND logic \\ \hline
+        5 & \texttt{XOR} & Phép toán XOR logic \\ \hline
+        6 & \texttt{LDA} & Nạp dữ liệu vào Accumulator \\ \hline
+        7 & \texttt{STO} & Lưu dữ liệu từ Accumulator ra bộ nhớ \\ \hline
+        8 & \texttt{JMP} & Nhảy đến địa chỉ chỉ định \\ \hline
+    \end{tabular}
+    \caption{Tập lệnh của RISC CPU}
+\end{table}
+
