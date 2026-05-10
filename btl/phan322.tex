@@ -1,0 +1,22 @@
+Khối đa hợp địa chỉ (Address Mux) là một mạch tổ hợp đóng vai trò bộ chọn nguồn địa chỉ cung cấp cho bộ nhớ (Memory). Tùy thuộc vào giai đoạn hoạt động của CPU, khối này sẽ quyết định đường dẫn địa chỉ nào được phép đi vào bộ nhớ để truy xuất dữ liệu. Để đảm bảo tính linh hoạt, khối được thiết kế với tham số \textbf{width} (mặc định 32-bit), cho phép dễ dàng mở rộng không gian địa chỉ khi cần thiết.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Address_mux.png} 
+    \caption{Sơ đồ khối bộ đa hợp địa chỉ (Address Mux)}
+    \label{fig:address_mux}
+\end{figure}
+
+\textbf{Nguyên lý hoạt động:}
+Hoạt động của Address Mux được điều khiển trực tiếp bởi tín hiệu \textit{sel} từ khối Controller. Logic lựa chọn được thực hiện dựa trên trạng thái của tín hiệu điều khiển này:
+
+\begin{itemize}
+    \item \textbf{Giai đoạn nạp lệnh ($sel = 1$):} 
+    Bộ đa hợp sẽ ưu tiên lựa chọn địa chỉ từ bộ đếm chương trình ($pc\_out$). Lúc này, địa chỉ của lệnh tiếp theo sẽ được đưa đến bộ nhớ để thực hiện quá trình lấy lệnh (Instruction Fetch).
+    
+    \item \textbf{Giai đoạn thực thi ($sel = 0$):} 
+    Bộ đa hợp chuyển sang lựa chọn địa chỉ toán hạng từ thanh ghi lệnh ($ir\_addr$). Điều này cho phép CPU truy xuất vào đúng vị trí của dữ liệu trong bộ nhớ để phục vụ cho các phép toán của ALU hoặc các lệnh lưu trữ dữ liệu.
+    
+    \item \textbf{Tính tham số hóa (Parameterization):}
+    Việc sử dụng tham số \texttt{width} cho phép module tự động điều chỉnh độ rộng của tất cả các đường bus dữ liệu vào và ra ($ir\_addr$, $pc\_out$, $addr\_out$). Điều này giúp thiết kế có tính linh hoạt cao và dễ dàng tái sử dụng trong các hệ thống có quy mô khác nhau.
+\end{itemize}

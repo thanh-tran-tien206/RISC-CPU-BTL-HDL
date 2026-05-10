@@ -1,0 +1,34 @@
+
+Khối chọn địa chỉ (Address Mux) là một bộ dồn kênh (Multiplexer) đóng vai trò điều phối luồng địa chỉ truy cập vào bộ nhớ. Tùy thuộc vào giai đoạn của chu kỳ lệnh, bộ chọn này sẽ quyết định lấy địa chỉ từ Program Counter (để nạp lệnh) hay từ Instruction Register (để truy cập toán hạng).
+
+\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc module Address Mux}]
+module address_mux #(
+    parameter WIDTH = 32  // Do rong mac dinh la 32-bit
+)(
+    input      [WIDTH-1:0] pc_addr,  // Dia chi tu Program Counter
+    input      [WIDTH-1:0] ir_addr,  // Dia chi tu Instruction Register
+    input                  sel,      // Tin hieu chon tu Controller
+    output reg [WIDTH-1:0] addr_out  // Dia chi xuat ra bo nho
+);
+
+    // Logic chon dia chi (Combinational Logic)
+    always @(*) begin
+        if (sel)
+            addr_out = pc_addr;      // Giai doan nap lenh (Fetch)
+        else
+            addr_out = ir_addr;      // Giai doan thuc thi (Execute)
+    end
+
+endmodule
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý:}
+\begin{itemize}
+    \item \textbf{Logic tổ hợp thuần túy:} Khối \texttt{always @(*)} đảm bảo \texttt{addr\_out} phản hồi tức thời với sự thay đổi của các ngõ vào mà không cần chờ xung nhịp clock. Điều này cực kỳ quan trọng để đảm bảo địa chỉ bộ nhớ ổn định ngay khi tín hiệu điều khiển \texttt{sel} được thiết lập.
+    \item \textbf{Cơ chế điều phối luồng:} 
+        \begin{itemize}
+            \item Khi \texttt{sel = 1}: Hệ thống đang ở trạng thái nạp lệnh (Fetch), địa chỉ từ \texttt{pc\_addr} được đưa ra để truy xuất mã máy.
+            \item Khi \texttt{sel = 0}: Hệ thống chuyển sang giai đoạn thực thi (Execute), địa chỉ trích xuất từ lệnh (\texttt{ir\_addr}) được ưu tiên để truy xuất dữ liệu toán hạng.
+        \end{itemize}
+    \item \textbf{Tính linh hoạt:} Việc sử dụng \texttt{parameter WIDTH} cho phép module dễ dàng tái sử dụng cho các kiến trúc CPU có độ rộng bus địa chỉ khác nhau (như 16-bit hoặc 64-bit) mà không cần chỉnh sửa mã nguồn cốt lõi.
+\end{itemize}

@@ -1,0 +1,76 @@
+% --- FILE: phan73_khoinangcap.tex ---
+\subsection{Hiện thực các khối nâng cấp}
+
+\subsubsection{Hiện thực ALU nâng cao}
+Khối ALU được mở rộng \texttt{opcode} từ 3-bit lên 4-bit và bổ sung các nhánh \texttt{case} tương ứng với 7 lệnh mới. Đáng chú ý, các lệnh đơn ngôi (\texttt{SHL}, \texttt{SHR}, \texttt{NOT}, \texttt{INC}, \texttt{DEC}) chỉ cần toán hạng \texttt{inA} từ Accumulator mà không cần đọc dữ liệu từ bộ nhớ, giúp đơn giản hóa luồng dữ liệu trong các chu kỳ thực thi tương ứng.
+
+\begin{lstlisting}[caption=Mã nguồn Verilog cho ALU nâng cao (ALU\_levelup.v)]
+module ALU_levelup (
+    input  [31:0] inA,
+    input  [31:0] inB,
+    input  [3:0]  opcode,        // Mo rong len 4-bit
+    output reg [31:0] out,
+    output        is_zero
+);
+    assign is_zero = (inA == 32'b0);
+
+    always @(*) begin
+        case(opcode)
+            4'b0000: out = inA;           // HLT
+            4'b0001: out = inA;           // SKZ
+            4'b0010: out = inA + inB;     // ADD
+            4'b0011: out = inA & inB;     // AND
+            4'b0100: out = inA ^ inB;     // XOR
+            4'b0101: out = inB;           // LDA
+            4'b0110: out = inA;           // STO
+            4'b0111: out = inA;           // JMP
+            // Lenh nang cao
+            4'b1000: out = inA - inB;     // SUB
+            4'b1001: out = inA << 1;      // SHL
+            4'b1010: out = inA >> 1;      // SHR
+            4'b1011: out = inA | inB;     // OR
+            4'b1100: out = ~inA;          // NOT
+            4'b1101: out = inA + 1;       // INC
+            4'b1110: out = inA - 1;       // DEC
+            default: out = inA;
+        endcase
+    end
+endmodule
+\end{lstlisting}
+
+\subsubsection{Hiện thực Instruction Register nâng cao}
+Module được cập nhật để tách đúng 4-bit cao làm \texttt{opcode} và 28-bit thấp làm địa chỉ, phù hợp với định dạng lệnh mới:
+
+\begin{lstlisting}[caption=Mã nguồn Verilog cho Instruction Register nâng cao]
+module instruction_reg_levelup (
+    input clk, rst, ld_ir,
+    input [31:0] data_in,
+    output reg [3:0]  opcode,    // Mo rong len 4-bit
+    output reg [27:0] addr       // Thu hep con 28-bit
+);
+    always @(posedge clk) begin
+        if (rst) {opcode, addr} <= 32'b0;
+        else if (ld_ir) begin
+            opcode <= data_in[31:28];
+            addr   <= data_in[27:0];
+        end
+    end
+endmodule
+\end{lstlisting}
+
+\subsubsection{Hiện thực Controller nâng cao}
+Khối Controller được cập nhật để nhận \texttt{opcode} 4-bit và xử lý đúng các tín hiệu điều khiển cho từng lệnh mới. Một điểm quan trọng cần lưu ý là các lệnh đơn ngôi (\texttt{SHL}, \texttt{SHR}, \texttt{NOT}, \texttt{INC}, \texttt{DEC}) không cần tín hiệu \texttt{rd} trong pha STORE vì chúng không cần đọc thêm dữ liệu từ bộ nhớ:
+
+\begin{lstlisting}[caption=Trích đoạn logic pha STORE trong Controller nâng cao]
+STORE: begin
+    inc_pc = 1;
+    if (opcode == 4'b0110) begin wr = 1; data_e = 1; end
+    if (opcode >= 4'b0010 && opcode != 4'b0110 && opcode != 4'b0111) begin
+        ld_ac = 1;
+        // Lenh don ngoi khong can doc bo nho
+        if (opcode != 4'b1001 && opcode != 4'b1010 && opcode != 4'b1100)
+            rd = 1;
+    end
+    if (opcode == 4'b0111) ld_pc = 1;
+end
+\end{lstlisting}

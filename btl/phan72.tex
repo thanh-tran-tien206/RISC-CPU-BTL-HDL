@@ -1,0 +1,48 @@
+% --- FILE: phan72_taplenh.tex ---
+\subsection{Mở rộng tập lệnh lên 4-bit Opcode}
+
+\subsubsection{Lý do mở rộng}
+Phiên bản cơ bản sử dụng \texttt{opcode} 3-bit cho phép mã hóa tối đa 8 lệnh, trong đó một số lệnh như \texttt{HLT}, \texttt{STO}, \texttt{JMP} không thực hiện phép toán số học mà chỉ đóng vai trò điều khiển luồng. Để nâng cao khả năng tính toán của CPU, nhóm mở rộng \texttt{opcode} lên 4-bit, cho phép mã hóa tối đa 16 lệnh. Đồng thời, định dạng lệnh 32-bit được điều chỉnh lại, trong đó 4-bit cao là \texttt{opcode} và 28-bit thấp là địa chỉ toán hạng:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{31} & \textbf{30} & \textbf{29} & \textbf{28} & \textbf{27} & \textbf{26} & \textbf{...} & \textbf{1} & \textbf{0} \\
+\hline
+\multicolumn{4}{|c|}{\textbf{Opcode (4 bits)}} & \multicolumn{5}{c|}{\textbf{Address (28 bits)}} \\
+\hline
+\end{tabular}
+\caption{Định dạng mã hóa lệnh 32-bit phiên bản nâng cao}
+\label{tab:instruction_format_levelup}
+\end{table}
+
+\subsubsection{Tập lệnh mở rộng}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|l|c|}
+\hline
+\textbf{Lệnh} & \textbf{Mã (4-bit)} & \textbf{Hoạt động} & \textbf{Output} \\
+\hline
+\texttt{HLT} & 0000 & Dừng hoạt động chương trình           & \texttt{inA} \\
+\texttt{SKZ} & 0001 & Bỏ qua lệnh tiếp theo nếu \texttt{inA} = 0     & \texttt{inA} \\
+\texttt{ADD} & 0010 & Cộng Accumulator với bộ nhớ            & \texttt{inA + inB} \\
+\texttt{AND} & 0011 & AND bitwise Accumulator với bộ nhớ     & \texttt{inA \& inB} \\
+\texttt{XOR} & 0100 & XOR bitwise Accumulator với bộ nhớ    & \texttt{inA \textasciicircum{} inB} \\
+\texttt{LDA} & 0101 & Nạp dữ liệu từ bộ nhớ vào Accumulator & \texttt{inB} \\
+\texttt{STO} & 0110 & Ghi Accumulator ra bộ nhớ              & \texttt{inA} \\
+\texttt{JMP} & 0111 & Nhảy không điều kiện                  & \texttt{inA} \\
+\hline
+\texttt{SUB} & 1000 & Trừ giá trị bộ nhớ khỏi Accumulator  & \texttt{inA - inB} \\
+\texttt{SHL} & 1001 & Dịch trái Accumulator 1 bit            & \texttt{inA << 1} \\
+\texttt{SHR} & 1010 & Dịch phải Accumulator 1 bit            & \texttt{inA >> 1} \\
+\texttt{OR}  & 1011 & OR bitwise Accumulator với bộ nhớ      & \texttt{inA | inB} \\
+\texttt{NOT} & 1100 & Đảo bit toàn bộ Accumulator            & \texttt{\textasciitilde{}inA} \\
+\texttt{INC} & 1101 & Tăng Accumulator thêm 1                & \texttt{inA + 1} \\
+\texttt{DEC} & 1110 & Giảm Accumulator đi 1                  & \texttt{inA - 1} \\
+\hline
+\end{tabular}
+\caption{Tập lệnh mở rộng phiên bản nâng cao (15 lệnh)}
+\label{tab:isa_levelup}
+\end{table}
+Các lệnh từ \texttt{0000} đến \texttt{0111} giữ nguyên ý nghĩa so với phiên bản cơ bản. Bảy lệnh mới (\texttt{SUB}, \texttt{SHL}, \texttt{SHR}, \texttt{OR}, \texttt{NOT}, \texttt{INC}, \texttt{DEC}) được bổ sung vào nhóm mã \texttt{1000} – \texttt{1110}.

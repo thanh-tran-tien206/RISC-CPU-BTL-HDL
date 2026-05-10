@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.5.10)  10 MAY 2026 15:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.5.10)  10 MAY 2026 20:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -837,7 +837,7 @@ Package hyperref Info: Link coloring OFF on input line 49.
 
 \c@lstlisting=\count346
  (bia.tex
-<logo.png, id=126, 845.3181pt x 597.6729pt>
+<logo.png, id=134, 845.3181pt x 597.6729pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
 Package pdftex.def Info: logo.png  used on input line 25.
@@ -867,43 +867,55 @@ File: t5cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 31.
  [4] [5] [6]) [7] (phan3.tex (phan32.tex (phan321.tex
-<PC.png, id=222, 635.37375pt x 432.61626pt>
+<PC.png, id=232, 635.37375pt x 432.61626pt>
 File: PC.png Graphic file (type png)
 <use PC.png>
 Package pdftex.def Info: PC.png  used on input line 5.
 (pdftex.def)             Requested size: 364.19667pt x 247.98668pt.
-) (phan323.tex [8 <./PC.png>]
-<ALU.png, id=229, 2028.57875pt x 1496.59125pt>
+) (phan322.tex [8 <./PC.png>]
+<Address_mux.png, id=239, 349.305pt x 324.21124pt>
+File: Address_mux.png Graphic file (type png)
+<use Address_mux.png>
+Package pdftex.def Info: Address_mux.png  used on input line 5.
+(pdftex.def)             Requested size: 318.66948pt x 295.79454pt.
+) (phan323.tex [9 <./Address_mux.png>]
+<ALU.png, id=246, 2028.57875pt x 1496.59125pt>
 File: ALU.png Graphic file (type png)
 <use ALU.png>
 Package pdftex.def Info: ALU.png  used on input line 7.
 (pdftex.def)             Requested size: 409.71692pt x 302.2588pt.
-<add.png, id=230, 491.8375pt x 724.7075pt>
+<add.png, id=247, 491.8375pt x 724.7075pt>
 File: add.png Graphic file (type png)
 <use add.png>
 Package pdftex.def Info: add.png  used on input line 21.
 (pdftex.def)             Requested size: 364.19667pt x 536.65114pt.
- [9 <./ALU.png>]
-<and.png, id=237, 453.695pt x 412.54124pt>
+ [10 <./ALU.png>]
+<and.png, id=254, 453.695pt x 412.54124pt>
 File: and.png Graphic file (type png)
 <use and.png>
 Package pdftex.def Info: and.png  used on input line 30.
 (pdftex.def)             Requested size: 409.71692pt x 372.55525pt.
- [10 <./add.png>]
-<xor.png, id=244, 443.6575pt x 392.46625pt>
+ [11 <./add.png>]
+<xor.png, id=262, 443.6575pt x 392.46625pt>
 File: xor.png Graphic file (type png)
 <use xor.png>
 Package pdftex.def Info: xor.png  used on input line 39.
 (pdftex.def)             Requested size: 273.14923pt x 241.63179pt.
- [11 <./and.png>]) (phan325.tex (phan3251.tex
-<accum.png, id=252, 564.1075pt x 303.1325pt>
+ [12 <./and.png>]) (phan325.tex (phan3251.tex
+<accum.png, id=269, 564.1075pt x 303.1325pt>
 File: accum.png Graphic file (type png)
 <use accum.png>
 Package pdftex.def Info: accum.png  used on input line 8.
 (pdftex.def)             Requested size: 295.90588pt x 159.0128pt.
 LaTeX Font Info:    Font shape `T5/cmtt/bx/n' in size <12> not available
 (Font)              Font shape `T5/cmtt/m/n' tried instead on input line 18.
- [12 <./xor.png> <./accum.png>])))) [13] (phan4.tex (phan44.tex (D:\miktex\tex/latex/listings\lstlang1.sty
+ [13 <./xor.png> <./accum.png>])) (phan326.tex
+<Memory.png, id=278, 619.31375pt x 396.48125pt>
+File: Memory.png Graphic file (type png)
+<use Memory.png>
+Package pdftex.def Info: Memory.png  used on input line 10.
+(pdftex.def)             Requested size: 409.71692pt x 262.3076pt.
+ [14 <./Memory.png>]))) [15] (phan4.tex (phan44.tex (D:\miktex\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 ) (D:\miktex\tex/latex/listings\lstlang2.sty
 File: lstlang2.sty 2025/11/14 1.11b listings language file
@@ -913,60 +925,60 @@ File: lstlang3.sty 2025/11/14 1.11b listings language file
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 7.
 LaTeX Font Info:    Font shape `T5/cmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `T5/cmtt/m/n' tried instead on input line 8.
- [14]) (phan46.tex (phan461.tex [15]))) [16] (phan5.tex (phan51.tex (phan513.tex [17] [18] [19]
-<machALU.png, id=448, 649.67719pt x 274.77657pt>
+ [16]) (phan46.tex (phan461.tex [17]))) [18] (phan5.tex (phan51.tex (phan513.tex [19] [20] [21]
+<machALU.png, id=472, 649.67719pt x 274.77657pt>
 File: machALU.png Graphic file (type png)
 <use machALU.png>
 Package pdftex.def Info: machALU.png  used on input line 141.
 (pdftex.def)             Requested size: 386.96027pt x 163.66388pt.
-<cosoleALU.png, id=449, 681.29532pt x 301.8778pt>
+<cosoleALU.png, id=473, 681.29532pt x 301.8778pt>
 File: cosoleALU.png Graphic file (type png)
 <use cosoleALU.png>
 Package pdftex.def Info: cosoleALU.png  used on input line 152.
 (pdftex.def)             Requested size: 341.43307pt x 151.2886pt.
- [20 <./machALU.png>]
-<waveALU.png, id=468, 1113.40968pt x 453.19313pt>
+ [22 <./machALU.png>]
+<waveALU.png, id=492, 1113.40968pt x 453.19313pt>
 File: waveALU.png Graphic file (type png)
 <use waveALU.png>
 Package pdftex.def Info: waveALU.png  used on input line 165.
 (pdftex.def)             Requested size: 455.24411pt x 185.29866pt.
-) (phan515.tex (phan5151.tex [21 <./cosoleALU.png> <./waveALU.png>] [22]
-<machacc.png, id=520, 640.64343pt x 257.46187pt>
+) (phan515.tex (phan5151.tex [23 <./cosoleALU.png> <./waveALU.png>] [24]
+<machacc.png, id=545, 640.64343pt x 257.46187pt>
 File: machacc.png Graphic file (type png)
 <use machacc.png>
 Package pdftex.def Info: machacc.png  used on input line 80.
 (pdftex.def)             Requested size: 318.66948pt x 128.06668pt.
-<consoleaccum.png, id=521, 525.46312pt x 359.84438pt>
+<consoleaccum.png, id=546, 525.46312pt x 359.84438pt>
 File: consoleaccum.png Graphic file (type png)
 <use consoleaccum.png>
 Package pdftex.def Info: consoleaccum.png  used on input line 91.
 (pdftex.def)             Requested size: 364.19667pt x 249.413pt.
- [23 <./machacc.png>]
-<waveacc.png, id=550, 1113.40968pt x 454.69875pt>
+ [25 <./machacc.png>]
+<waveacc.png, id=574, 1113.40968pt x 454.69875pt>
 File: waveacc.png Graphic file (type png)
 <use waveacc.png>
 Package pdftex.def Info: waveacc.png  used on input line 104.
 (pdftex.def)             Requested size: 455.24411pt x 185.91426pt.
-)))) [24 <./consoleaccum.png> <./waveacc.png>] (phan6.tex [25]) [26] (d:\HDL_BTL\RISC-CPU-BTL-HDL\btl\build\main.aux)
+)))) [26 <./consoleaccum.png> <./waveacc.png>] (phan6.tex [27]) [28] (d:\HDL_BTL\RISC-CPU-BTL-HDL\btl\build\main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-03-20>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: A627FC01D681F87E06EB4886C814E2E7;5546.
+(rerunfilecheck)             Checksum: AAFDF7011B2AA27E0321BCB8921DC4BA;5770.
  ) 
 Here is how much of TeX's memory you used:
- 25665 strings out of 467691
- 459132 string characters out of 5431805
- 1180478 words of memory out of 5000000
- 53967 multiletter control sequences out of 15000+600000
+ 25703 strings out of 467691
+ 459843 string characters out of 5431805
+ 1180766 words of memory out of 5000000
+ 53993 multiletter control sequences out of 15000+600000
  648774 words of font info for 72 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,11n,94p,761b,2083s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\PHUC THINH\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><D:/miktex/fonts/type1/public/amsfonts/cm/cmmi12.pfb><D:/miktex/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/miktex/fonts/type1/public/amsfonts/cm/cmsy10.pfb><D:/miktex/fonts/type1/vntex/vnr/vnbx10.pfb><D:/miktex/fonts/type1/vntex/vnr/vnbx12.pfb><D:/miktex/fonts/type1/vntex/vnr/vnr10.pfb><D:/miktex/fonts/type1/vntex/vnr/vnr12.pfb><D:/miktex/fonts/type1/vntex/vnr/vnr17.pfb><D:/miktex/fonts/type1/vntex/vnr/vnr6.pfb><D:/miktex/fonts/type1/vntex/vnr/vnti12.pfb><D:/miktex/fonts/type1/vntex/vnr/vntt10.pfb><D:/miktex/fonts/type1/vntex/vnr/vntt12.pfb>
-Output written on d:\HDL_BTL\RISC-CPU-BTL-HDL\btl\build\main.pdf (28 pages, 609602 bytes).
+Output written on d:\HDL_BTL\RISC-CPU-BTL-HDL\btl\build\main.pdf (30 pages, 638159 bytes).
 PDF statistics:
- 689 PDF objects out of 1000 (max. 8388607)
- 314 named destinations out of 1000 (max. 500000)
- 318 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 714 PDF objects out of 1000 (max. 8388607)
+ 320 named destinations out of 1000 (max. 500000)
+ 344 words of extra memory for PDF output out of 10000 (max. 10000000)
 

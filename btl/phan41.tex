@@ -1,0 +1,47 @@
+
+Dự án được tổ chức theo mô hình phân cấp module (\textit{Modular Design}), mỗi khối chức năng tương ứng với một file Verilog riêng biệt, kèm theo Testbench độc lập để kiểm thử từng khối trước khi tích hợp hệ thống.
+
+\textbf{Sơ đồ tổ chức thư mục dự án:}
+\begin{verbatim}
+RISC_CPU/
+|
++-- src/                        # Ma nguon thiet ke chinh
+|   +-- ALU.v                   # Khoi ALU (8 phep toan, 32-bit)
+|   +-- Accumulator.v           # Khoi Accumulator Register
+|   +-- program_counter.v       # Khoi Program Counter (PC)
+|   +-- address_mux.v           # Khoi Address Mux
+|   +-- Instruction_Register.v  # Khoi Instruction Register (IR)
+|   +-- memory.v                # Khoi Memory (Single bidirectional port)
+|   +-- controller.v            # Khoi Controller (FSM 8 trang thai)
+|   +-- CPU_Top.v               # File Top-level tich hop toan he thong
+|
++-- tb/                         # Testbench kiem thu tung khoi
+|   +-- ALU_tb.v                # Testbench cho ALU
+|   +-- Accumulator_tb.v        # Testbench cho Accumulator Register
+|   +-- ...                     # Cac testbench tuong ung khac
+|   +-- CPU_Top_tb.v            # Testbench toan he thong
+|
++-- sim/                        # Ket qua mo phong
+    +-- waveform/               # File waveform (.vcd) tu Vivado
+\end{verbatim}
+
+\textbf{Vai trò của các thành phần cốt lõi:}
+
+\begin{table}[H]
+\centering
+\caption{Danh mục vai trò các module trong hệ thống CPU}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+\textbf{Tên File} & \textbf{Vai trò trong hệ thống} \\ \hline
+\texttt{ALU.v} & Thực thi 8 phép toán số học và logic dựa trên Opcode 3-bit, xuất kết quả 32-bit và tín hiệu \texttt{is\_zero}. \\ \hline
+\texttt{Accumulator.v} & Lưu trữ kết quả trung gian từ ALU, hỗ trợ reset đồng bộ và cập nhật dữ liệu khi \texttt{load\_en = 1}. \\ \hline
+\texttt{program\_counter.v} & Bộ đếm địa chỉ lệnh 32-bit, hỗ trợ tăng tuần tự hoặc nạp địa chỉ nhảy khi thực hiện lệnh \texttt{JMP}. \\ \hline
+\texttt{address\_mux.v} & Lựa chọn giữa địa chỉ lệnh (từ PC) và địa chỉ toán hạng (từ IR) dựa trên tín hiệu điều khiển \texttt{sel}. \\ \hline
+\texttt{Instruction\_Register.v} & Lưu trữ mã lệnh nạp từ Memory, thực hiện tách Opcode cho Controller và địa chỉ cho Address Mux. \\ \hline
+\texttt{memory.v} & Đơn vị lưu trữ lệnh và dữ liệu, hỗ trợ đọc/ghi thông qua cổng dữ liệu song hướng (\textit{bidirectional port}). \\ \hline
+\texttt{controller.v} & Khối điều khiển trung tâm sử dụng FSM 8 trạng thái để phát động các tín hiệu điều khiển toàn hệ thống. \\ \hline
+\texttt{CPU\_Top.v} & Module cấp cao nhất thực hiện kết nối tất cả các khối chức năng thành một kiến trúc CPU hoàn chỉnh. \\ \hline
+\end{tabularx}
+\end{table}

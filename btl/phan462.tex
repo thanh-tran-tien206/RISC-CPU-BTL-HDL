@@ -1,0 +1,35 @@
+\subsubsection{Hiện thực Instruction Register (IR)}
+Thanh ghi lệnh (Instruction Register - IR) đóng vai trò trung gian lưu trữ mã lệnh được đọc về từ bộ nhớ trong giai đoạn Fetch. Dữ liệu lệnh sau đó được tách thành hai phần: mã vận hành (Opcode) đưa đến khối Controller/ALU và địa chỉ toán hạng (Address) đưa đến bộ chọn địa chỉ.
+
+\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc module Instruction Register}]
+module instruction_reg (
+    input             clk,      // Xung clock he thong
+    input             rst,      // Reset dong bo (active high)
+    input             ld_ir,    // Tin hieu cho phep nap lenh tu Controller
+    input      [31:0] data_in,  // Du lieu lenh tu Bus bo nho
+    output reg [2:0]  opcode,   // 3-bit ma lenh (Opcode)
+    output reg [28:0] addr      // Dia chi bo nho di kem lenh
+);
+
+    // Instruction Register hoat dong dong bo theo canh len cua clock
+    always @(posedge clk) begin
+        if (rst) begin
+            // Khoi tao gia tri ve 0 khi co tin hieu reset
+            opcode <= 3'b000;
+            addr   <= 29'b0;
+        end
+        else if (ld_ir) begin
+            // Nap du lieu tu Bus vao thanh ghi khi ld_ir duoc kich hoat
+            opcode <= data_in[31:29]; 
+            addr   <= data_in[28:0];  
+        end
+    end
+
+endmodule
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý:}
+\begin{itemize}
+    \item \textbf{Đồng bộ hóa tuyệt đối:} Khối \texttt{always} chỉ nhạy với sườn lên của xung nhịp (\texttt{posedge clk}). Tín hiệu \texttt{rst} được kiểm tra ngay bên trong cấu trúc điều kiện của khối \texttt{always}, đảm bảo mạch chỉ thực hiện việc xóa dữ liệu (\texttt{opcode <= 0, addr <= 0}) khi có sườn xung clock tác động (Reset đồng bộ).
+    \item \textbf{Cơ chế chốt dữ liệu:} Khi tín hiệu cho phép \texttt{ld\_ir} ở mức logic 0, thanh ghi tự động duy trì trạng thái cũ. Điều này giúp hệ thống giữ vững kết quả tính toán, ngăn chặn việc dữ liệu bị ghi đè bởi các tín hiệu rác trên đường dẫn từ Bus bộ nhớ trong các chu kỳ máy không có yêu cầu cập nhật.
+\end{itemize}

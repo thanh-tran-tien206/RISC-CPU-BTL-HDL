@@ -1,0 +1,43 @@
+Bộ nhớ (Memory) đóng vai trò là kho lưu trữ trung tâm cho cả lệnh chương trình 
+và dữ liệu. 
+Điểm đặc biệt trong thiết kế này là việc sử dụng 
+một cổng dữ liệu lưỡng cực duy nhất (Single bidirectional data port) \
+để tối ưu hóa tài nguyên, đồng thời yêu cầu 
+một cơ chế điều phối chặt chẽ để đảm bảo không xảy ra hiện tượng đọc và ghi cùng một lúc.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Memory.png} 
+    \caption{Sơ đồ cấu trúc nội bộ khối Memory 32-bit}
+    \label{fig:memory_internal}
+\end{figure}
+
+\textbf{Nguyên lý hoạt động:}
+Khối Memory hoạt động đồng bộ với xung lên của clk và được quản lý bởi 
+các tín hiệu điều khiển từ Controller. 
+Kiến trúc nội bộ của khối bao gồm các thành phần xử lý logic sau:
+
+\begin{itemize}
+    \item \textbf{Giải mã địa chỉ (Address Decoding):} 
+    Địa chỉ 32-bit từ ngõ vào sẽ đi qua khối giải mã (Decoder). 
+    Khối này có nhiệm vụ xác định chính xác vị trí hàng và cột trong mảng ô nhớ 
+    (Memory Array) để chuẩn bị cho các thao tác truy xuất dữ liệu.
+    
+    \item \textbf{Ghi dữ liệu (Write Logic - $wr = 1$):} 
+    Quá trình ghi diễn ra đồng bộ tại xung lên của clk. Khi tín hiệu \textit{wr} 
+    được kích hoạt, dữ liệu từ cổng \textit{data} bên ngoài sẽ đi theo nhánh 
+    \textit{data\_in} để chốt vào ô nhớ đã được chọn bởi bộ giải mã.
+    
+    \item \textbf{Đọc dữ liệu và Trở kháng cao (Read Logic \& High-Z):} 
+    Dữ liệu từ ô nhớ được đưa ra đường \textit{data\_out} 
+    dẫn tới bộ đệm 3 trạng thái (Tri-state Buffer). 
+    \begin{itemize}
+        \item Khi $rd = 1$: Bộ đệm mở cho phép dữ liệu từ 
+            \textit{data\_out} tràn ra cổng giao tiếp bên ngoài.
+        \item Khi không có lệnh đọc: 
+        Bộ đệm sẽ đưa ngõ ra về trạng thái trở kháng cao ($Z$), giúp "ngắt kết nối" bộ nhớ khỏi bus dữ liệu để nhường đường cho các khối khác ghi vào.
+    \end{itemize}
+    
+    \item \textbf{Ràng buộc an toàn:}
+    Thiết kế đảm bảo tính toàn vẹn bằng cách ngăn chặn tuyệt đối việc đọc và ghi dữ liệu đồng thời, tránh gây xung đột và hư hỏng dữ liệu trên bus dùng chung.
+\end{itemize}
