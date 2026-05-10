@@ -1,0 +1,78 @@
+
+Khối điều khiển là thành phần quan trọng nhất trong kiến trúc CPU, đóng vai trò điều phối toàn bộ các khối chức năng khác thông qua việc giải mã mã lệnh (Opcode). Module này được hiện thực bằng máy trạng thái hữu hạn (FSM) với 8 pha (Phases) tương ứng với một chu kỳ lệnh đầy đủ.
+
+\textbf{Mã nguồn Verilog hiện thực khối điều khiển:}
+
+\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc khoi dieu khien trung tam (Controller)}]
+module controller (
+    input clk, rst,
+    input [2:0] opcode,
+    input is_zero,          // Tin hieu tu ALU de xu ly lenh SKZ
+    output reg sel, rd, ld_ir, halt, inc_pc, ld_ac, ld_pc, wr, data_e,
+    output [2:0] debug_state
+);
+    reg [2:0] state, next_state;
+    
+    // Khai bao 8 trang thai cua chu ky lenh (8-Phase)
+    parameter INST_ADDR = 3'd0, INST_FETCH = 3'd1, INST_LOAD = 3'd2, IDLE = 3'd3,
+              OP_ADDR = 3'd4, OP_FETCH = 3'd5, ALU_OP = 3'd6, STORE = 3'd7;
+
+    // Dinh nghia tap lenh (Instruction Set Architecture)
+    localparam HLT=3'b000, SKZ=3'b001, ADD=3'b010, AND=3'b011, 
+               XOR=3'b100, LDA=3'b101, STO=3'b110, JMP=3'b111;
+
+    // 1. Bo nho trang thai (State Register) - Reset dong bo
+    always @(posedge clk) begin
+        if (rst) state <= INST_ADDR;
+        else     state <= next_state;      
+    end
+    assign debug_state = state;
+
+    // 2. Logic chuyen trang thai ke tiep
+    always @(*) begin
+        next_state = state + 1; // Tu dong chuyen tuan tu qua 8 buoc
+    end
+
+    // 3. Logic dieu khien dau ra (Output Logic)
+    always @(*) begin
+        // Gan gia tri mac dinh de tranh tao ra mach chot (latches) khong mong muon
+        sel=0; rd=0; ld_ir=0; halt=0; inc_pc=0; ld_ac=0; ld_pc=0; wr=0; data_e=0;
+
+        case(state)
+            INST_ADDR:  sel = 1;
+            INST_FETCH: begin sel = 1; rd = 1; end
+            INST_LOAD:  begin sel = 1; rd = 1; ld_ir = 1; end
+            IDLE:       begin sel = 1; rd = 1; ld_ir = 1; end
+            OP_ADDR:    begin 
+                sel = 0; 
+                if (opcode == HLT) halt = 1; 
+            end
+            OP_FETCH:   begin 
+                if (opcode == ADD || opcode == AND || opcode == XOR || opcode == LDA) rd = 1; 
+            end
+            ALU_OP:     begin
+                if (opcode == ADD || opcode == AND || opcode == XOR || opcode == LDA) rd = 1;
+                if (opcode == SKZ && is_zero) inc_pc = 1;
+                if (opcode == JMP) ld_pc = 1;
+                if (opcode == STO) data_e = 1;
+            end
+            STORE:      begin
+                inc_pc = 1; // Luon tang PC tai buoc cuoi de tro sang lenh moi
+                if (opcode == ADD || opcode == AND || opcode == XOR || opcode == LDA) begin
+                    rd = 1; ld_ac = 1;
+                end
+                if (opcode == JMP) ld_pc = 1;
+                if (opcode == STO) begin wr = 1; data_e = 1; end
+            end
+        endcase
+    end
+endmodule
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý:}
+\begin{itemize}
+    \item \textbf{Phân kỳ chu kỳ máy:} CPU vận hành dựa trên chu kỳ cố định 8 bước. Bốn trạng thái đầu thực hiện việc nạp lệnh (\textit{Instruction Fetch}) từ bộ nhớ vào thanh ghi lệnh (IR). Bốn trạng thái sau thực hiện việc giải mã và thực thi (\textit{Execute}) tùy theo Opcode.
+    \item \textbf{Cơ chế nạp và lưu trữ:} Các tín hiệu cập nhật thanh ghi như \texttt{ld\_ac} và tín hiệu ghi bộ nhớ \texttt{wr} được đặt tại trạng thái cuối cùng (\texttt{STORE}). Điều này đảm bảo các phép tính toán tại ALU hoặc việc truyền dữ liệu trên Bus đã ổn định trước khi được chốt giá trị.
+    \item \textbf{Điều phối Bus hệ thống:} Tín hiệu \texttt{data\_e} điều khiển cổng đệm ba trạng thái, đảm bảo CPU chỉ chiếm quyền ghi lên Bus dữ liệu khi thực hiện lệnh \texttt{STO}, tránh tình trạng xung đột dữ liệu (\textit{Bus contention}).
+    \item \textbf{Xử lý lệnh rẽ nhánh:} Logic điều khiển cho phép thực hiện lệnh nhảy cách (\texttt{SKZ}) bằng cách kiểm tra cờ \texttt{is\_zero} và phát động thêm một xung \texttt{inc\_pc} bổ sung, giúp bỏ qua lệnh kế tiếp trong bộ nhớ.
+\end{itemize}

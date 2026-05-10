@@ -1,0 +1,28 @@
+% --- FILE: phan71_tongquan.tex ---
+\subsection{Tổng quan các cải tiến}
+Dựa trên nền tảng thiết kế cơ bản đã hoàn thiện ở các phần trước, nhóm tiến hành mở rộng hệ thống theo hai hướng chính: (1) nâng cấp kiến trúc tập lệnh bằng cách mở rộng \texttt{opcode} từ 3-bit lên 4-bit, bổ sung 7 lệnh mới; và (2) triển khai toàn bộ hệ thống CPU lên bo mạch FPGA Digilent Arty Z7 thực tế thông qua việc xây dựng thêm hai khối phụ trợ là bộ chia tần số và module tích hợp cấp cao nhất dành riêng cho FPGA.
+
+Bảng dưới đây tóm tắt sự khác biệt giữa phiên bản cơ bản và phiên bản nâng cao:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Tiêu chí} & \textbf{Phiên bản cơ bản} & \textbf{Phiên bản nâng cao} \\
+\hline
+Độ rộng opcode       & 3-bit  & 4-bit \\
+\hline
+Số lượng lệnh        & 8      & 15    \\
+\hline
+Độ rộng địa chỉ lệnh & 29-bit & 28-bit \\
+\hline
+Triển khai FPGA      & Không  & Có    \\
+\hline
+Chia tần số          & Không  & Có (125MHz $\rightarrow$ 1Hz) \\
+\hline
+Hiển thị kết quả     & Không  & LED 4-bit \\
+\hline
+\end{tabular}
+\caption{So sánh phiên bản cơ bản và phiên bản nâng cao}
+\label{tab:levelup_compare}
+\end{table}

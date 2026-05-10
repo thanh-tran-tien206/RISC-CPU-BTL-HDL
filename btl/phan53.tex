@@ -1,0 +1,55 @@
+
+
+Sau khi tiến hành tổng hợp (Synthesis) và phân tích trên phần mềm Vivado, các thông số về tài nguyên phần cứng, thời gian và năng lượng tiêu thụ của hệ thống CPU được ghi nhận và đánh giá chi tiết như sau:
+
+\subsection{Phân tích tài nguyên sử dụng (Utilization Report)}
+
+Dựa trên kết quả từ bảng báo cáo \textit{Hierarchical Utilization}, hệ thống sử dụng một lượng tài nguyên rất nhỏ so với tổng thể chip FPGA mục tiêu.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{ulti.png}
+    \caption{Báo cáo tài nguyên Utilization chi tiết cho từng module}
+    \label{fig:utilization}
+\end{figure}
+
+\textbf{Nhận xét:}
+\begin{itemize}
+    \item \textbf{Tính tối ưu:} CPU chỉ tiêu thụ \textbf{130 LUTs} và \textbf{54 Registers}. Đây là mức sử dụng tài nguyên cực kỳ thấp (dưới 1\% trên dòng chip Artix-7), chứng tỏ cấu trúc tập lệnh 8-opcode và máy trạng thái 8-pha đã được tối ưu hóa tốt về mặt logic.
+    \item \textbf{Phân bổ tài nguyên:} Khối \texttt{IR} (51 LUTs) và \texttt{ControlUnit} (40 LUTs) chiếm tỷ trọng lớn nhất do chứa logic giải mã và điều phối phức tạp. Khối \texttt{RAM} đã được Vivado tự động ánh xạ vào \textbf{0.5 Block RAM Tile}, giúp tiết kiệm tài nguyên logic rời rạc cho hệ thống.
+\end{itemize}
+
+\subsection{Phân tích thời gian (Timing Analysis)}
+
+Báo cáo \textit{Design Timing Summary} cung cấp cái nhìn về độ trễ của các đường tín hiệu trong CPU.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{time.png}
+    \caption{Báo cáo phân tích thời gian Timing Summary}
+    \label{fig:timing}
+\end{figure}
+
+\textbf{Nhận xét:}
+\begin{itemize}
+    \item \textbf{Độ tin cậy:} Chỉ số \textbf{TNS (Total Negative Slack) bằng 0.000 ns} và không có điểm lỗi (\textit{Failing Endpoints}) cho thấy thiết kế hoàn toàn sạch về mặt logic, không tồn tại các vòng lặp hở hay lỗi chạy đua tín hiệu (\textit{race condition}).
+    \item \textbf{Khả năng vận hành:} Mặc dù chưa thiết lập ràng buộc XDC cụ thể cho xung clock (\textit{inf slack}), nhưng với mật độ logic thấp, hệ thống hoàn toàn đáp ứng tốt các ứng dụng yêu cầu tần số hoạt động chuẩn 100MHz mà không gặp rủi ro về trễ đường truyền.
+\end{itemize}
+
+\subsection{Phân tích năng lượng tiêu thụ (Power Analysis)}
+
+Báo cáo \textit{Power Estimation} giúp đánh giá mức độ hao tán năng lượng và nhiệt độ của chip khi thực thi chương trình.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{power.png}
+    \caption{Báo cáo ước tính năng lượng tiêu thụ và nhiệt độ hoạt động}
+    \label{fig:power}
+\end{figure}
+
+\textbf{Nhận xét:}
+\begin{itemize}
+    \item \textbf{Hiệu suất năng lượng:} Tổng công suất tiêu thụ đạt \textbf{1.952 W}. Trong đó, công suất động (\textit{Dynamic Power}) chiếm tới \textbf{93\%}, điều này cho thấy phần lớn năng lượng được tập trung cho các hoạt động đóng cắt cổng logic hữu ích để xử lý lệnh.
+    \item \textbf{Phân tích thành phần:} Logic chiếm \textbf{50\%} và tín hiệu chiếm \textbf{36\%} công suất động, phản ánh đặc thù của kiến trúc Von Neumann khi Bus dữ liệu và các khối tính toán hoạt động với tần suất cao.
+    \item \textbf{Độ ổn định nhiệt:} Nhiệt độ hoạt động duy trì ở mức \textbf{47.5°C}. Đây là mức nhiệt lý tưởng, đảm bảo CPU có thể vận hành liên tục trong thời gian dài mà không cần các hệ thống tản nhiệt bổ sung, tăng cường độ bền cho phần cứng.
+\end{itemize}

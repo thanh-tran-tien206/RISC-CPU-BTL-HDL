@@ -1,0 +1,51 @@
+
+
+Khối bộ nhớ được thiết kế theo kiến trúc Von Neumann, đóng vai trò lưu trữ chung cho cả tập lệnh (Instruction) và dữ liệu (Data). Module tuân thủ nghiêm ngặt các yêu cầu kỹ thuật về độ rộng dữ liệu 32-bit và sử dụng cổng giao tiếp song hướng để tối ưu hóa Bus hệ thống.
+
+\textbf{Mã nguồn Verilog hiện thực module Memory:}
+
+\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc khoi Bo nho (Memory)}]
+module memory (
+    input             clk,      // Xung clock he thong
+    input      [31:0] addr,     // Bus dia chi 32-bit
+    input             rd,       // Tin hieu cho phep doc (Active High)
+    input             wr,       // Tin hieu cho phep ghi (Active High)
+    inout      [31:0] data      // Cong du lieu song huong (Single bidirectional port)
+);
+
+    // Khai bao mang bo nho (256 o nho, moi o 32-bit)
+    reg [31:0] ram [0:255];
+    
+    // Thanh ghi dem de giu du lieu sau khi doc tu RAM
+    reg [31:0] data_out;
+
+    // Thiet ke Single bidirectional data port bang buffer 3 trang thai
+    // Ngon ngu Verilog su dung trang thai tro khang cao 'bz de giai phong Bus
+    assign data = (rd && !wr) ? data_out : 32'bz;
+
+    // Hoat dong dong bo: Thuc hien doc/ghi tai canh len cua xung clock (clk)
+    always @(posedge clk) begin
+        // Kiem soat logic: Khong cho phep doc va ghi cung mot luc
+        if (wr && !rd) begin
+            ram[addr[7:0]] <= data;      // Thao tac Ghi du lieu vao RAM
+        end
+        else if (rd && !wr) begin
+            data_out <= ram[addr[7:0]];  // Thao tac Doc du lieu tu RAM ra dem
+        end
+    end
+
+endmodule
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý :}
+\begin{itemize}
+    \item \textbf{Cổng song hướng (Inout):} Sử dụng một cổng duy nhất cho cả hai chiều dữ liệu. Khi tín hiệu \texttt{rd} và \texttt{wr} đều bằng 0 hoặc khi đang ở chế độ ghi, cổng dữ liệu được đặt ở trạng thái trở kháng cao (\texttt{Hi-Z}) để tránh xung đột điện áp trên đường Bus chung.
+    \item \textbf{Độ phân giải địa chỉ:}CPU sử dụng 5-bit toán hạng tương ứng với 32 ô nhớ khả dụng. Tuy nhiên, trong quá trình hiện thực, nhóm đã quyết định mở rộng không gian bộ nhớ lên 256 ô nhớ bằng cách sử dụng 8-bit thấp của bus địa chỉ 32-bit (\texttt{addr[7:0]}). Quyết định này xuất phát từ các lý do kỹ thuật sau:
+
+\begin{itemize}
+    \item \textbf{Thứ nhất:} Theo kiến trúc Von Neumann được áp dụng trong thiết kế, cùng một khối \textit{Memory} phải lưu trữ đồng thời cả mã lệnh (tại các địa chỉ thấp) và dữ liệu (tại các địa chỉ cao hơn). Với chỉ 32 ô nhớ theo đề bài, không gian này không đủ để chứa đồng thời cả chương trình lẫn dữ liệu phục vụ kiểm thử.
+    \item \textbf{Thứ hai:} Việc sử dụng 8-bit địa chỉ tương thích tự nhiên với bus địa chỉ 32-bit của hệ thống mà không phát sinh thêm logic chuyển đổi phức tạp, giúp đơn giản hóa phần hiện thực và giảm nguy cơ phát sinh lỗi.
+\end{itemize}
+
+    \item \textbf{Tính đồng bộ:} Mọi thay đổi về nội dung ô nhớ (Ghi) hoặc cập nhật dữ liệu ra thanh ghi đệm (Đọc) đều chỉ xảy ra tại thời điểm sườn lên của xung clock, giúp hệ thống hoạt động ổn định và dễ dàng kiểm soát Timing.
+\end{itemize}

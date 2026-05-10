@@ -1,0 +1,124 @@
+
+\subsection{Triển khai lên FPGA thực tế}
+
+\subsubsection{Khối chia tần số (Clock Divider)}
+Bo mạch Digilent Arty Z7 cung cấp xung clock hệ thống ở tần số 125 MHz. Để quan sát được quá trình thực thi lệnh bằng mắt thường thông qua đèn LED, cần giảm tần số hoạt động của CPU xuống mức 1 Hz. Khối \texttt{clk\_1hz\_levelup} thực hiện nhiệm vụ này bằng cách đếm đủ 62.500.000 chu kỳ clock của xung 125 MHz thì đảo trạng thái ngõ ra một lần, tạo ra xung clock 1 Hz:
+
+$$f_{out} = \frac{f_{in}}{2 \times N} = \frac{125\,000\,000}{2 \times 62\,500\,000} = 1 \text{ Hz}$$
+
+\begin{lstlisting}[caption=Mã nguồn Verilog cho bộ chia tần số]
+module clk_1hz_levelup (
+    input  clk_in, rst,
+    output reg clk_out
+);
+    reg [26:0] cnt;
+    always @(posedge clk_in) begin
+        if (rst) begin cnt <= 0; clk_out <= 0; end
+        else if (cnt == 62500000 - 1) begin
+            cnt <= 0; clk_out <= ~clk_out;
+        end
+        else cnt <= cnt + 1;
+    end
+endmodule
+\end{lstlisting}
+
+\subsubsection{Khối tích hợp FPGA Top-level}
+Module \texttt{FPGA\_Top\_levelup} đóng vai trò là lớp giao tiếp giữa CPU và phần cứng vật lý của bo mạch. Module này kết nối khối chia tần số, khối CPU và các ngoại vi đầu ra theo sơ đồ sau:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Tín hiệu} & \textbf{Phương hướng} & \textbf{Mô tả} \\
+\hline
+\texttt{sys\_clk}  & Vào  & Xung clock 125 MHz từ bo mạch \\
+\texttt{btn\_rst}  & Vào  & Nút nhấn Reset vật lý \\
+\texttt{led[3:0]}  & Ra   & 4 đèn LED hiển thị 4-bit kết quả \\
+\texttt{halt\_led} & Ra   & 1 đèn LED báo hiệu CPU đã dừng \\
+\hline
+\end{tabular}
+\caption{Bảng tín hiệu giao tiếp của \texttt{FPGA\_Top\_levelup}}
+\label{tab:fpga_top_io}
+\end{table}
+
+\begin{lstlisting}[caption=Mã nguồn Verilog khối Top-level cho FPGA]
+module FPGA_Top_levelup (
+    input  sys_clk,         // Xung 125 MHz tu board FPGA
+    input  btn_rst,         // Nut nhan Reset
+    output [3:0] led,       // 4 den LED hien thi ket qua
+    output halt_led         // Den LED bao CPU dung
+);
+    wire clk_1hz;
+    wire h_flag;
+    wire [31:0] acc_wire;
+
+    clk_1hz_levelup Div (
+        .clk_in(sys_clk), .rst(btn_rst), .clk_out(clk_1hz)
+    );
+
+    CPU_Top_levelup CPU (
+        .clk(clk_1hz), .rst(btn_rst),
+        .halt(h_flag), .acc_val(acc_wire)
+    );
+
+    assign led      = acc_wire[3:0]; // Hien thi 4-bit thap cua Accumulator
+    assign halt_led = h_flag;
+endmodule
+\end{lstlisting}
+
+Khi CPU hoàn thành chương trình và gặp lệnh \texttt{HLT}, tín hiệu \texttt{halt} được kéo lên mức cao, kích hoạt \texttt{halt\_led}. Đồng thời, 4-bit thấp của thanh ghi Accumulator (\texttt{acc\_wire[3:0]}) được ánh xạ trực tiếp lên 4 đèn LED, cho phép quan sát kết quả tính toán cuối cùng trực tiếp trên phần cứng mà không cần công cụ đo đạc thêm.
+
+\subsection{Sơ đồ kiến trúc hệ thống nâng cao}
+Kiến trúc tổng thể của hệ thống nâng cao khi triển khai lên FPGA được tổ chức theo mô hình phân lớp:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1cm and 1cm,
+    block/.style={rectangle, draw, fill=blue!5, text width=3.5cm, align=center, minimum height=1.2cm, font=\small\sffamily\bfseries},
+    arrow/.style={-{Stealth[scale=1.2]}, thick}
+]
+
+    % Xếp các khối theo chiều dọc để tiết kiệm chiều ngang
+    \node [block] (clk) {clk\_1hz\\(125MHz $\rightarrow$ 1Hz)};
+    \node [block, below=of clk] (cpu) {CPU\_Top\_levelup\\(4-bit opcode)};
+    \node [block, below=of cpu] (led) {led[3:0]\\halt\_led};
+
+    % Vẽ mũi tên từ trên xuống
+    \draw [arrow] (clk) -- (cpu);
+    \draw [arrow] (cpu) -- node[right, font=\scriptsize\itshape] {acc\_val} (led);
+
+    % Khung bao quanh (vẽ sau cùng để nằm dưới)
+    \begin{scope}[on background layer]
+        \node [draw, thick, dashed, fill=gray!2, inner sep=0.6cm, fit=(clk) (cpu) (led)] (top) {};
+        \node [anchor=south east, font=\footnotesize\bfseries] at (top.north east) {FPGA\_Top\_levelup};
+    \end{scope}
+
+\end{tikzpicture}
+\caption{Sơ đồ luồng tín hiệu Top-level (Bố cục dọc chống tràn lề)}
+\label{fig:fpga_top_level}
+\end{figure}
+
+
+\subsection{So sánh chi tiết với phiên bản cơ bản}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Module} & \textbf{Thay đổi} & \textbf{Nội dung cụ thể} \\
+\hline
+ALU               & Nâng cấp & Opcode 3-bit $\rightarrow$ 4-bit, thêm 7 lệnh mới \\
+Instruction Reg   & Nâng cấp & Opcode [31:29] $\rightarrow$ [31:28], addr 29-bit $\rightarrow$ 28-bit \\
+Controller        & Nâng cấp & Xử lý opcode 4-bit, logic lệnh đơn ngôi \\
+Address Mux       & Nâng cấp & \texttt{ir\_addr} 29-bit $\rightarrow$ 28-bit, padding \texttt{4'b0000} \\
+Program Counter   & Nâng cấp & \texttt{d\_in} 28-bit, JMP dùng \texttt{\{4'b0000, d\_in\}} \\
+CPU\_Top          & Nâng cấp & Thêm output \texttt{acc\_val}, dây nội bộ 4-bit \texttt{op} \\
+clk\_1hz          & Mới      & Chia tần 125 MHz $\rightarrow$ 1 Hz cho FPGA \\
+FPGA\_Top         & Mới      & Tích hợp CPU + LED + nút nhấn lên FPGA \\
+Accumulator  & Giữ nguyên & Chỉ viết lại gọn hơn, không thay đổi chức năng \\
+Memory       & Giữ nguyên & Đổi tên biến đệm, không thay đổi chức năng     \\
+\hline
+\end{tabular}
+\caption{Bảng tổng hợp thay đổi giữa phiên bản cơ bản và nâng cao}
+\label{tab:module_changes}
+\end{table}
