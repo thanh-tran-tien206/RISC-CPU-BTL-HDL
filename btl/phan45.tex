@@ -4,69 +4,157 @@ Khối điều khiển là thành phần quan trọng nhất trong kiến trúc 
 \textbf{Mã nguồn Verilog hiện thực khối điều khiển:}
 
 \begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc khoi dieu khien trung tam (Controller)}]
+`timescale 1ns / 1ps
+
 module controller (
-    input clk, rst,
+    input clk,
+    input rst,              
     input [2:0] opcode,
-    input is_zero,          // Tin hieu tu ALU de xu ly lenh SKZ
-    output reg sel, rd, ld_ir, halt, inc_pc, ld_ac, ld_pc, wr, data_e,
+    input zero,
+    output reg sel,
+    output reg rd,
+    output reg ld_ir,
+    output reg halt,
+    output reg inc_pc,
+    output reg ld_ac,
+    output reg ld_pc,
+    output reg wr,
+    output reg data_e,
+
     output [2:0] debug_state
 );
+
+    //========================
+    // STATE DECLARATION
+    //========================
     reg [2:0] state, next_state;
-    
-    // Khai bao 8 trang thai cua chu ky lenh (8-Phase)
-    parameter INST_ADDR = 3'd0, INST_FETCH = 3'd1, INST_LOAD = 3'd2, IDLE = 3'd3,
-              OP_ADDR = 3'd4, OP_FETCH = 3'd5, ALU_OP = 3'd6, STORE = 3'd7;
 
-    // Dinh nghia tap lenh (Instruction Set Architecture)
-    localparam HLT=3'b000, SKZ=3'b001, ADD=3'b010, AND=3'b011, 
-               XOR=3'b100, LDA=3'b101, STO=3'b110, JMP=3'b111;
+    parameter INST_ADDR  = 3'd0,
+              INST_FETCH = 3'd1,
+              INST_LOAD  = 3'd2,
+              IDLE       = 3'd3,
+              OP_ADDR    = 3'd4,
+              OP_FETCH   = 3'd5,
+              ALU_OP     = 3'd6,
+              STORE      = 3'd7;
 
-    // 1. Bo nho trang thai (State Register) - Reset dong bo
-    always @(posedge clk) begin
-        if (rst) state <= INST_ADDR;
-        else     state <= next_state;      
-    end
     assign debug_state = state;
 
-    // 2. Logic chuyen trang thai ke tiep
-    always @(*) begin
-        next_state = state + 1; // Tu dong chuyen tuan tu qua 8 buoc
+    //========================
+    // STATE REGISTER (SYNC RESET)
+    //========================
+    always @(posedge clk) begin
+        if (rst)
+            state <= INST_ADDR;
+        else
+            state <= next_state;
     end
 
-    // 3. Logic dieu khien dau ra (Output Logic)
+    //========================
+    // NEXT STATE LOGIC
+    //========================
     always @(*) begin
-        // Gan gia tri mac dinh de tranh tao ra mach chot (latches) khong mong muon
-        sel=0; rd=0; ld_ir=0; halt=0; inc_pc=0; ld_ac=0; ld_pc=0; wr=0; data_e=0;
+        case(state)
+            INST_ADDR:  next_state = INST_FETCH;
+            INST_FETCH: next_state = INST_LOAD;
+            INST_LOAD:  next_state = IDLE;
+            IDLE:       next_state = OP_ADDR;
+            OP_ADDR:    next_state = OP_FETCH;
+            OP_FETCH:   next_state = ALU_OP;
+            ALU_OP:     next_state = STORE;
+            STORE:      next_state = INST_ADDR;
+            default:    next_state = INST_ADDR;
+        endcase
+    end
+
+    always @(*) begin
+        sel = 0;
+        rd = 0;
+        ld_ir = 0;
+        halt = 0;
+        inc_pc = 0;
+        ld_ac = 0;
+        ld_pc = 0;
+        wr = 0;
+        data_e = 0;
 
         case(state)
-            INST_ADDR:  sel = 1;
-            INST_FETCH: begin sel = 1; rd = 1; end
-            INST_LOAD:  begin sel = 1; rd = 1; ld_ir = 1; end
-            IDLE:       begin sel = 1; rd = 1; ld_ir = 1; end
-            OP_ADDR:    begin 
-                sel = 0; 
-                if (opcode == HLT) halt = 1; 
+            INST_ADDR: begin
+                sel = 1;
             end
-            OP_FETCH:   begin 
-                if (opcode == ADD || opcode == AND || opcode == XOR || opcode == LDA) rd = 1; 
+            INST_FETCH: begin
+                sel = 1;
+                rd  = 1;
             end
-            ALU_OP:     begin
-                if (opcode == ADD || opcode == AND || opcode == XOR || opcode == LDA) rd = 1;
-                if (opcode == SKZ && is_zero) inc_pc = 1;
-                if (opcode == JMP) ld_pc = 1;
-                if (opcode == STO) data_e = 1;
+            INST_LOAD: begin
+                sel   = 1;
+                rd    = 1;
+                ld_ir = 1;
             end
-            STORE:      begin
-                inc_pc = 1; // Luon tang PC tai buoc cuoi de tro sang lenh moi
-                if (opcode == ADD || opcode == AND || opcode == XOR || opcode == LDA) begin
-                    rd = 1; ld_ac = 1;
+            IDLE: begin
+                sel   = 1;
+                rd    = 1;
+                ld_ir = 1;
+            end
+            OP_ADDR: begin
+                inc_pc = 1;
+                if(opcode==3'b000)begin
+                    halt = 1;
                 end
-                if (opcode == JMP) ld_pc = 1;
-                if (opcode == STO) begin wr = 1; data_e = 1; end
+            end
+            OP_FETCH: begin
+                if(opcode == 3'b010 || opcode == 3'b011||
+                   opcode == 3'b100 || opcode == 3'b101)begin
+                    rd=1;
+                end
+            end
+            ALU_OP: begin
+                case(opcode)
+                    3'b010, 
+                    3'b011, 
+                    3'b100, 
+                    3'b101: 
+                    begin
+                        rd = 1;
+                    end
+                    3'b001: begin
+                        inc_pc = zero;
+                    end
+                    3'b111: begin
+                        ld_pc = 1;
+                    end
+                    3'b110: begin
+                        data_e =1;
+                    end
+                    default: begin
+                    end
+                endcase
+            end
+            STORE: begin
+                case(opcode)
+                    3'b010, 
+                    3'b011, 
+                    3'b100, 
+                    3'b101: 
+                    begin
+                        rd=1;
+                        ld_ac =1;
+                    end
+                    3'b111: begin
+                        ld_pc =1;
+                    end
+                    3'b110: begin
+                        wr=1;
+                        data_e =1;
+                    end
+                    default: begin
+                    end
+                endcase
             end
         endcase
     end
 endmodule
+
 \end{lstlisting}
 
 \textbf{Mô tả logic xử lý:}

@@ -1,5 +1,12 @@
 \documentclass[12pt,a4paper]{article}
-
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning}
+\usetikzlibrary{fit}
+\usetikzlibrary{backgrounds}
+\usepackage{xurl}
+\usepackage{siunitx}
+\usepackage{amsmath} % Để dùng được lệnh \text
 \usepackage{tabularx} % Thư viện giúp bảng tự động co giãn
 \usepackage[utf8]{inputenc}
 \usepackage{float}
@@ -82,5 +89,22 @@
     \input{phan6.tex}
     \newpage
 
+    \input{phan7.tex}
+    \newpage
+
+\section*{Phụ lục: Mã nguồn và Tài liệu trực tuyến}
+\addcontentsline{toc}{section}{Phụ lục: Mã nguồn và Tài liệu trực tuyến}
+
+Nhằm mục đích kiểm chứng và tái sử dụng mã nguồn, nhóm thực hiện dự án đã đăng tải toàn bộ các module thiết kế (ALU, Controller, Register,...) lên GitHub Desktop và quản lý tại:
+
+\vspace{0.5cm}
+\centering
+\fbox{
+    \begin{minipage}{0.9\textwidth}
+        \centering
+        \textbf{Đường dẫn kho lưu trữ mã nguồn:} \\
+        \url{https://github.com/thanh-tran-tien206/RISC-CPU-BTL-HDL.git}
+    \end{minipage}
+}
 
 \end{document}
