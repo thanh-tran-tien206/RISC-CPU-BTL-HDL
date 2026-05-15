@@ -1,5 +1,7 @@
 \documentclass[12pt,a4paper]{article}
 
+\usepackage{xurl}
+\usepackage{amsmath}
 \usepackage{tabularx} % Thư viện giúp bảng tự động co giãn
 \usepackage[utf8]{inputenc}
 \usepackage{float}
@@ -12,10 +14,17 @@
 \usepackage{bytefield}    % Vẽ sơ đồ bit chuyên nghiệp (Phần 2 cần)
 \usepackage{caption}      % Quản lý chú thích hình ảnh/bảng biểu
 \usepackage[hidelinks]{hyperref}     % Tạo mục lục có thể nhấn vào được (link)
-
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, backgrounds, fit}
 \usepackage{listings}
 \usepackage{xcolor} % Để tô màu cho code
-
+\usepackage{hyperref} % Gói lệnh để tạo liên kết
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,        % Màu của liên kết GitHub sẽ là màu xanh
+}
 % Cấu hình cơ bản cho khối code Verilog
 \lstset{
     basicstyle=\ttfamily\small,
@@ -82,5 +91,15 @@
     \input{phan6.tex}
     \newpage
 
+\input{phan7.tex}
+    \newpage
+  \section*{Phụ lục: Mã nguồn chương trình}
+    \addcontentsline{toc}{section}{Phụ lục: Mã nguồn chương trình}
+    
+    Toàn bộ mã nguồn Verilog, các file Testbench và báo cáo của dự án thiết kế CPU RISC được lưu trữ tại hệ thống quản lý phiên bản GitHub theo đường dẫn dưới đây:
+    
+    \begin{itemize}
+        \item \textbf{Repository URL:} \url{https://github.com/thanh-tran-tien206/RISC-CPU-BTL-HDL.git}
+    \end{itemize}
 
 \end{document}
