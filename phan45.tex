@@ -1,0 +1,166 @@
+
+Khối điều khiển là thành phần quan trọng nhất trong kiến trúc CPU, đóng vai trò điều phối toàn bộ các khối chức năng khác thông qua việc giải mã mã lệnh (Opcode). Module này được hiện thực bằng máy trạng thái hữu hạn (FSM) với 8 pha (Phases) tương ứng với một chu kỳ lệnh đầy đủ.
+
+\textbf{Mã nguồn Verilog hiện thực khối điều khiển:}
+
+\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc khoi dieu khien trung tam (Controller)}]
+`timescale 1ns / 1ps
+
+module controller (
+    input clk,
+    input rst,              
+    input [2:0] opcode,
+    input is_zero,
+    output reg sel,
+    output reg rd,
+    output reg ld_ir,
+    output reg halt,
+    output reg inc_pc,
+    output reg ld_ac,
+    output reg ld_pc,
+    output reg wr,
+    output reg data_e,
+
+    output [2:0] debug_state
+);
+
+    //========================
+    // STATE DECLARATION
+    //========================
+    reg [2:0] state, next_state;
+
+    parameter INST_ADDR  = 3'd0,
+              INST_FETCH = 3'd1,
+              INST_LOAD  = 3'd2,
+              IDLE       = 3'd3,
+              OP_ADDR    = 3'd4,
+              OP_FETCH   = 3'd5,
+              ALU_OP     = 3'd6,
+              STORE      = 3'd7;
+
+    assign debug_state = state;
+
+    //========================
+    // STATE REGISTER (SYNC RESET)
+    //========================
+    always @(posedge clk) begin
+        if (rst)
+            state <= INST_ADDR;
+        else
+            state <= next_state;
+    end
+
+    //========================
+    // NEXT STATE LOGIC
+    //========================
+    always @(*) begin
+        case(state)
+            INST_ADDR:  next_state = INST_FETCH;
+            INST_FETCH: next_state = INST_LOAD;
+            INST_LOAD:  next_state = IDLE;
+            IDLE:       next_state = OP_ADDR;
+            OP_ADDR:    next_state = OP_FETCH;
+            OP_FETCH:   next_state = ALU_OP;
+            ALU_OP:     next_state = STORE;
+            STORE:      next_state = INST_ADDR;
+            default:    next_state = INST_ADDR;
+        endcase
+    end
+
+    always @(*) begin
+        sel = 0;
+        rd = 0;
+        ld_ir = 0;
+        halt = 0;
+        inc_pc = 0;
+        ld_ac = 0;
+        ld_pc = 0;
+        wr = 0;
+        data_e = 0;
+
+        case(state)
+            INST_ADDR: begin
+                sel = 1;
+            end
+            INST_FETCH: begin
+                sel = 1;
+                rd  = 1;
+            end
+            INST_LOAD: begin
+                sel   = 1;
+                rd    = 1;
+                ld_ir = 1;
+            end
+            IDLE: begin
+                sel   = 1;
+                rd    = 1;
+                ld_ir = 1;
+            end
+            OP_ADDR: begin
+                inc_pc = 1;
+                if(opcode==3'b000)begin
+                    halt = 1;
+                end
+            end
+            OP_FETCH: begin
+                if(opcode == 3'b010 || opcode == 3'b011||
+                   opcode == 3'b100 || opcode == 3'b101)begin
+                    rd=1;
+                end
+            end
+            ALU_OP: begin
+                case(opcode)
+                    3'b010, 
+                    3'b011, 
+                    3'b100, 
+                    3'b101: 
+                    begin
+                        rd = 1;
+                    end
+                    3'b001: begin
+                        inc_pc = !is_zero;
+                    end
+                    3'b111: begin
+                        ld_pc = 1;
+                    end
+                    3'b110: begin
+                        data_e =1;
+                    end
+                    default: begin
+                    end
+                endcase
+            end
+            STORE: begin
+                case(opcode)
+                    3'b010, 
+                    3'b011, 
+                    3'b100, 
+                    3'b101: 
+                    begin
+                        rd=1;
+                        ld_ac =1;
+                    end
+                    3'b111: begin
+                        ld_pc =1;
+                    end
+                    3'b110: begin
+                        wr=1;
+                        data_e =1;
+                    end
+                    default: begin
+                    end
+                endcase
+            end
+        endcase
+    end
+endmodule
+
+\end{lstlisting}
+
+\textbf{Mô tả logic xử lý:}
+\begin{itemize}
+    \item \textbf{Phân kỳ chu kỳ máy:} CPU vận hành dựa trên chu kỳ cố định 8 bước. Bốn trạng thái đầu thực hiện việc nạp lệnh (\textit{Instruction Fetch}) từ bộ nhớ vào thanh ghi lệnh (IR). Bốn trạng thái sau thực hiện việc giải mã và thực thi (\textit{Execute}) tùy theo Opcode.
+    \item \textbf{Cơ chế nạp và lưu trữ:} Các tín hiệu cập nhật thanh ghi như \texttt{ld\_ac} và tín hiệu ghi bộ nhớ \texttt{wr} được đặt tại trạng thái cuối cùng (\texttt{STORE}). Điều này đảm bảo các phép tính toán tại ALU hoặc việc truyền dữ liệu trên Bus đã ổn định trước khi được chốt giá trị.
+    \item \textbf{Điều phối Bus hệ thống:} Tín hiệu \texttt{data\_e} điều khiển cổng đệm ba trạng thái, đảm bảo CPU chỉ chiếm quyền ghi lên Bus dữ liệu khi thực hiện lệnh \texttt{STO}, tránh tình trạng xung đột dữ liệu (\textit{Bus contention}).
+    \item \textbf{Xử lý lệnh rẽ nhánh:} Logic điều khiển cho phép thực hiện lệnh nhảy cách (\texttt{SKZ}) bằng cách kiểm tra cờ \texttt{is\_zero} và phát động thêm một xung \texttt{inc\_pc} bổ sung, giúp bỏ qua lệnh kế tiếp trong bộ nhớ.
+\end{itemize}
