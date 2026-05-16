@@ -10,7 +10,7 @@ module controller (
     input clk,
     input rst,              
     input [2:0] opcode,
-    input zero,
+    input is_zero,
     output reg sel,
     output reg rd,
     output reg ld_ir,
@@ -118,7 +118,7 @@ module controller (
                         rd = 1;
                     end
                     3'b001: begin
-                        inc_pc = zero;
+                        inc_pc = !is_zero;
                     end
                     3'b111: begin
                         ld_pc = 1;

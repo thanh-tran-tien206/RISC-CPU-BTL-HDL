@@ -19,7 +19,7 @@ module controller_tb;
     reg clk;
     reg rst;
     reg [2:0] opcode;
-    reg zero;
+    reg is_zero;
 
     // Tin hieu dau ra (Outputs)
     wire sel, rd, ld_ir, halt, inc_pc, ld_ac, ld_pc, wr, data_e;
@@ -27,7 +27,7 @@ module controller_tb;
 
     // Khoi tao don vi can kiem tra (UUT)
     controller uut (
-        .clk(clk), .rst(rst), .opcode(opcode), .zero(zero), 
+        .clk(clk), .rst(rst), .opcode(opcode), .is_zero(is_zero), 
         .sel(sel), .rd(rd), .ld_ir(ld_ir), .halt(halt), 
         .inc_pc(inc_pc), .ld_ac(ld_ac), .ld_pc(ld_pc), 
         .wr(wr), .data_e(data_e), .debug_state(debug_state)
@@ -38,7 +38,7 @@ module controller_tb;
 
     initial begin
         // Khoi tao ban dau
-        clk = 0; rst = 1; opcode = 3'b000; zero = 0;
+        clk = 0; rst = 1; opcode = 3'b000; is_zero = 0;
         
         // Giai doan Reset
         #15 rst = 0;
