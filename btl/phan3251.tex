@@ -1,6 +1,7 @@
 \textbf{a. Accumulator Register}
 
- Accumulator Register là một thanh ghi 32-bit đóng vai trò trung tâm trong luồng dữ liệu của kiến trúc RISC này. Nó chịu trách nhiệm lưu trữ các kết quả trung gian từ ALU và cung cấp toán hạng cho các phép toán tiếp theo hoặc ghi ra bộ nhớ.
+ Accumulator Register là một thanh ghi 32-bit chịu trách nhiệm lưu trữ các kết quả trung gian từ ALU 
+ và cung cấp toán hạng cho các phép toán tiếp theo hoặc ghi ra bộ nhớ.
 
 \begin{figure}[H]
     \centering
@@ -10,19 +11,19 @@
     \label{fig:accumulator_diagram}
 \end{figure}
 
-\textbf{Sơ đồ khối của Accumulator Register gồm các thành phần giao tiếp chính:}
+\textbf{Các thành phần giao tiếp chính:}
 
 \begin{itemize}
-    \item \textbf{Tín hiệu vào (Input -- màu tím):}
+    \item \textbf{Tín hiệu vào (Input):}
     \begin{itemize}
-        \item \textbf{\texttt{D [31:0]}:} Dữ liệu 32-bit nhận từ ngõ ra của khối ALU.
-        \item \textbf{\texttt{load\_en}:} Tín hiệu cho phép ghi vào Accumulator. Dữ liệu chỉ được cập nhật khi tín hiệu này ở mức tích cực.
-        \item \textbf{\texttt{clk}:} Xung clock đồng bộ hóa quá trình lưu trữ dữ liệu theo sườn xung.
+        \item \textbf{\texttt{D [31:0]}:} Dữ liệu 32-bit nhận từ đầu ra của khối ALU.
+        \item \textbf{\texttt{load\_en}:} Tín hiệu tích cực mức cao cho phép ghi dữ liệu vào Accumulator
+        \item \textbf{\texttt{clk}:} Xung clock đồng bộ hóa quá trình.
     \end{itemize}
     
-    \item \textbf{Tín hiệu ra (Output -- màu xanh lá):}
+    \item \textbf{Tín hiệu ra (Output): } Tín hiệu rẽ ra hai nhánh 
     \begin{itemize}
-        \item \textbf{\texttt{inA}:} Cấp ngược lại cho ALU làm toán hạng đầu vào thứ nhất cho các phép tính số học và logic.
-        \item \textbf{\texttt{STO}:} Dữ liệu 32-bit được trích xuất để ghi vào bộ nhớ dữ liệu khi thực thi lệnh STO.
+        \item \textbf{\texttt{inALU}:} Đi vào khối ALU làm toán hạng đầu vào thứ nhất.
+        \item \textbf{\texttt{STO MEM}:} Đi vào bộ đệm và được ghi vào bộ nhớ khi có lệnh STO.
     \end{itemize}
 \end{itemize}

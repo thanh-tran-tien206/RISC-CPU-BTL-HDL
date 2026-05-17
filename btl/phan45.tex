@@ -1,9 +1,4 @@
-
-Khối điều khiển là thành phần quan trọng nhất trong kiến trúc CPU, đóng vai trò điều phối toàn bộ các khối chức năng khác thông qua việc giải mã mã lệnh (Opcode). Module này được hiện thực bằng máy trạng thái hữu hạn (FSM) với 8 pha (Phases) tương ứng với một chu kỳ lệnh đầy đủ.
-
-\textbf{Mã nguồn Verilog hiện thực khối điều khiển:}
-
-\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc khoi dieu khien trung tam (Controller)}]
+\begin{lstlisting}[language=Verilog, caption={Controller}]
 `timescale 1ns / 1ps
 
 module controller (
@@ -24,9 +19,6 @@ module controller (
     output [2:0] debug_state
 );
 
-    //========================
-    // STATE DECLARATION
-    //========================
     reg [2:0] state, next_state;
 
     parameter INST_ADDR  = 3'd0,
@@ -40,9 +32,7 @@ module controller (
 
     assign debug_state = state;
 
-    //========================
-    // STATE REGISTER (SYNC RESET)
-    //========================
+
     always @(posedge clk) begin
         if (rst)
             state <= INST_ADDR;
@@ -50,9 +40,7 @@ module controller (
             state <= next_state;
     end
 
-    //========================
-    // NEXT STATE LOGIC
-    //========================
+
     always @(*) begin
         case(state)
             INST_ADDR:  next_state = INST_FETCH;
@@ -159,8 +147,13 @@ endmodule
 
 \textbf{Mô tả logic xử lý:}
 \begin{itemize}
-    \item \textbf{Phân kỳ chu kỳ máy:} CPU vận hành dựa trên chu kỳ cố định 8 bước. Bốn trạng thái đầu thực hiện việc nạp lệnh (\textit{Instruction Fetch}) từ bộ nhớ vào thanh ghi lệnh (IR). Bốn trạng thái sau thực hiện việc giải mã và thực thi (\textit{Execute}) tùy theo Opcode.
-    \item \textbf{Cơ chế nạp và lưu trữ:} Các tín hiệu cập nhật thanh ghi như \texttt{ld\_ac} và tín hiệu ghi bộ nhớ \texttt{wr} được đặt tại trạng thái cuối cùng (\texttt{STORE}). Điều này đảm bảo các phép tính toán tại ALU hoặc việc truyền dữ liệu trên Bus đã ổn định trước khi được chốt giá trị.
-    \item \textbf{Điều phối Bus hệ thống:} Tín hiệu \texttt{data\_e} điều khiển cổng đệm ba trạng thái, đảm bảo CPU chỉ chiếm quyền ghi lên Bus dữ liệu khi thực hiện lệnh \texttt{STO}, tránh tình trạng xung đột dữ liệu (\textit{Bus contention}).
-    \item \textbf{Xử lý lệnh rẽ nhánh:} Logic điều khiển cho phép thực hiện lệnh nhảy cách (\texttt{SKZ}) bằng cách kiểm tra cờ \texttt{is\_zero} và phát động thêm một xung \texttt{inc\_pc} bổ sung, giúp bỏ qua lệnh kế tiếp trong bộ nhớ.
+    \item \textbf{Phân kỳ chu kỳ máy:} CPU vận hành dựa trên chu kỳ cố định 8 trạng thái. 
+    Bốn trạng thái đầu thực hiện việc nạp lệnh (\textit{Instruction Fetch}) từ bộ nhớ vào IR. 
+    Bốn trạng thái sau thực hiện việc giải mã và thực thi (\textit{Execute}) tùy theo opcode.
+    \item \textbf{Cơ chế nạp và lưu trữ:} Các tín hiệu cập nhật thanh ghi như \texttt{ld\_ac} và tín hiệu ghi bộ nhớ \texttt{wr} 
+    được đặt tại trạng thái cuối cùng (\texttt{STORE}).
+    \item \textbf{Điều phối Bus hệ thống:} Tín hiệu \texttt{data\_e} điều khiển cổng đệm ba trạng thái, 
+    đảm bảo CPU chỉ chiếm quyền ghi lên Bus dữ liệu khi thực hiện lệnh \texttt{STO}.
+    \item \textbf{Xử lý lệnh rẽ nhánh:} Logic điều khiển cho phép thực hiện lệnh nhảy cách (\texttt{SKZ}) bằng cách kiểm tra cờ \texttt{is\_zero} 
+    và phát động thêm một xung \texttt{inc\_pc} bổ sung, giúp bỏ qua lệnh kế tiếp trong bộ nhớ.
 \end{itemize}

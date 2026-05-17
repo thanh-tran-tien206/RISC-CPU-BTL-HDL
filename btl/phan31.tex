@@ -1,6 +1,5 @@
-Module CPU Top là bước tích hợp mức cao nhất (Top-level Instantiation), 
-nơi toàn bộ các khối chức năng con và khối điều khiển được liên kết với nhau
- để tạo thành một vi xử lý RISC 8-pha.
+Module CPU là bước tích hợp mức cao nhất, 
+nơi toàn bộ các khối chức năng và khối điều khiển được liên kết với nhau để tạo thành một vi xử lý RISC 8-pha.
 \begin{figure}[H]
     \centering
     % Nhớ đổi tên file ảnh dưới đây cho khớp với tên file bạn lưu trong máy nhé
@@ -9,25 +8,27 @@ nơi toàn bộ các khối chức năng con và khối điều khiển được
     \label{fig:cpu_top_diagram}
 \end{figure}
 
-\textbf{Phân tích cấu trúc kết nối hệ thống:}
-
-Nhìn vào Sơ đồ \ref{fig:cpu_top_diagram}, 
-có thể thấy kiến trúc tổng thể của CPU được chia làm hai hệ thống 
-mạng lưới dây dẫn biệt lập, hoạt động đan xen nhau:
+\textbf{Phân tích cấu trúc kết nối hệ thống:} Nhìn vào Hình \ref{fig:cpu_top_diagram}, 
+có thể thấy kiến trúc tổng thể của CPU hoạt động trên 2 loại đường dây chính.
 
 \begin{itemize}
-    \item \textbf{Đường dẫn dữ liệu (Datapath - Các đường bus 32-bit nét đậm):} 
-    Đảm nhiệm việc vận chuyển mã lệnh, địa chỉ và toán hạng giữa các khối chức năng.
+    \item \textbf{Đường dẫn địa chỉ, dữ liệu (Các đường bus 32-bit màu trắng nét đậm):} Đảm nhận việc vận chuyển mã lệnh, địa chỉ và toán hạng giữa các khối chức năng.
     \begin{itemize}
-        \item \textbf{Định tuyến Địa chỉ (Address Routing):} Địa chỉ truy cập bộ nhớ được lựa chọn qua khối Address Mux. Trong pha Fetch, địa chỉ được cấp từ \texttt{PC}. Trong pha Execute, địa chỉ được cấp từ trường \texttt{ir\_addr} của \texttt{IR}.
-        \item \textbf{Định tuyến Lệnh nhảy (Jump Routing):} Một nhánh của bus \texttt{ir\_addr} được nối trực tiếp vào ngõ vào \texttt{data\_in} của \texttt{PC}. Đây là đường dẫn dữ liệu phần cứng cốt lõi để thực thi lệnh rẽ nhánh không điều kiện (\texttt{JMP}).
-        \item \textbf{Vòng lặp tính toán (ALU Execution Loop):} Mọi phép toán đều lấy thanh ghi \texttt{Accumulator} làm trung tâm. Toán hạng thứ nhất (\texttt{inA}) luôn được cấp từ ngõ ra của Accumulator, trong khi toán hạng thứ hai (\texttt{inB}) được lấy trực tiếp từ bus dữ liệu của \texttt{Memory}.
-        \item \textbf{Lưu trữ dữ liệu (Store Path):} Khối đệm 3 trạng thái (Tristate Buffer) được đặt giữa Accumulator và bus bộ nhớ. Khi cần thực thi lệnh \texttt{STO}, cổng này mở ra, cho phép dữ liệu từ Accumulator chảy ngược lên bus chung để ghi vào bộ nhớ.
+        \item \textbf{Đường dẫn địa chỉ:} Địa chỉ được truy cập trong bộ nhớ được lựa chọn qua khối Address Mux. 
+        Trong pha Fetch, địa chỉ được cấp từ \texttt{PC}. Trong pha Execute, địa chỉ được lấy từ đầu ra \texttt{ir\_addr} của \texttt{IR}.
+        \item \textbf{Đường dẫn địa chỉ lệnh nhảy:} Một nhánh của \texttt{ir\_addr} được nối trực tiếp vào đầu vào \texttt{data\_in} của \texttt{PC}. 
+        Đây là đường dẫn dữ liệu thực thi lệnh rẽ nhánh không điều kiện (\texttt{JMP}).
+        \item \textbf{Đường dẫn tính toán:} Các phép toán trên ALU đều lấy dữ liệu từ \texttt{Accumulator} và \texttt{Memory}. 
+        Toán hạng thứ nhất (\texttt{inA}) luôn được cấp từ đầu ra của Accumulator, 
+        trong khi toán hạng thứ hai (\texttt{inB}) được lấy từ đầu ra vào \texttt{data} của \texttt{Memory}.
+        \item \textbf{Đường dẫn lưu trữ dữ liệu:} Khối đệm 3 trạng thái (Tristate Buffer) được đặt giữa đầu ra \texttt{Accumulator} và đầu ra vào \texttt{data} của \texttt{Memory} . 
+        Khi cần thực thi lệnh \texttt{STO}, cổng này mở ra, cho phép dữ liệu từ \texttt{Accumulator} truyền vào bộ nhớ.
     \end{itemize}
     
-    \item \textbf{Đường dẫn điều khiển (Control Path - Các đường tín hiệu 1-bit nét thanh):} 
+    \item \textbf{Đường dẫn tín hiệu điều khiển (Các đường tín hiệu 1-bit mang màu sắc):} 
     \begin{itemize}
-        \item Khối \texttt{Controller} đóng vai trò là nhạc trưởng. Nó liên tục lắng nghe mã lệnh \texttt{opcode} từ \texttt{IR} và cờ \texttt{is\_zero} phản hồi từ \texttt{ALU}.
-        \item Dựa trên Máy trạng thái 8 pha, \texttt{Controller} sẽ kích hoạt các tín hiệu điều khiển (như \texttt{sel, rd, wr, inc\_pc, ld\_ac...}) tới chân Enable của từng khối logic tại các nhịp clock tương ứng. Việc phân chia tín hiệu độc lập đảm bảo hệ thống vận hành tuần tự, không bao giờ xảy ra tình trạng đụng độ dữ liệu (Data Hazard) trên bus hệ thống.
+        \item Khối \texttt{Controller} chỉ huy các khối khác dựa theo \texttt{opcode} từ \texttt{IR} và cờ \texttt{is\_zero} phản hồi từ \texttt{ALU}.
+        \item Dựa trên Máy trạng thái 8 pha (8 phase FSM), khối \texttt{Controller} sẽ kích hoạt các tín hiệu điều khiển 
+        (\texttt{sel, rd, wr, inc\_pc, ld\_ac...}) đến các chân enable của từng khối chức năng. 
     \end{itemize}
 \end{itemize}

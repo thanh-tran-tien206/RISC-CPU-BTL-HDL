@@ -1,6 +1,9 @@
 
 
-Đơn vị số học và logic (ALU) là thành phần thực thi các phép toán cốt lõi của CPU. Mặc dù hệ thống sử dụng định dạng mã hóa lệnh 8-bit (3-bit Opcode và 5-bit Operand), nhưng khối ALU được thiết kế để xử lý dữ liệu với độ rộng thực tế là \textbf{32-bit}. Điều này cho phép máy tính thực hiện các phép tính trên dải giá trị lớn, đáp ứng tiêu chuẩn của các kiến trúc máy tính hiện đại.
+Đơn vị số học và logic (ALU) là khối chức năng thực hiện các phép toán và logic của CPU. 
+Mặc dù hệ thống sử dụng định dạng mã hóa lệnh 8-bit (3-bit Opcode và 5-bit Operand), 
+nhưng khối ALU được thiết kế để xử lý dữ liệu với độ rộng thực tế là \textbf{32-bit}. 
+Điều này cho phép máy tính thực hiện các phép tính trên dải giá trị lớn.
 
 \begin{figure}[H]
     \centering
@@ -10,11 +13,11 @@
 \end{figure}
 
 \textbf{Nguyên lý thực thi các phép toán chi tiết:}
-Dựa trên Opcode 3-bit từ khối điều khiển, ALU sẽ kích hoạt các mạch logic tương ứng để xử lý hai toán hạng 32-bit ($inA$ và $inB$):
+Dựa trên 3-bit opcode từ khối điều khiển, ALU sẽ kích hoạt các mạch logic tương ứng để xử lý hai toán hạng 32-bit ($inA$ và $inB$):
 
 \begin{itemize}
     \item \textbf{Phép cộng (ADD - Opcode 010):} 
-    Thực hiện cộng đại số hai giá trị 32-bit. Kết quả $ALU\_Out = inA + inB$. Phép toán này sử dụng bộ cộng đầy đủ (Full Adder) 32-bit để xử lý dữ liệu từ Accumulator và bộ nhớ.
+    Thực hiện cộng đại số hai giá trị 32-bit. Kết quả $ALU\_Out = inA + inB$. Phép toán này sử dụng bộ cộng (Full Adder) 32-bit để xử lý dữ liệu từ Accumulator và bộ nhớ.
     
     \begin{figure}[H]
         \centering
@@ -32,7 +35,8 @@ Dựa trên Opcode 3-bit từ khối điều khiển, ALU sẽ kích hoạt các
     \end{figure}
 
     \item \textbf{Phép logic XOR (Opcode 100):} 
-    Thực hiện phép toán bitwise XOR giữa hai toán hạng 32-bit. Phép toán này đặc biệt hữu ích trong việc kiểm tra sự khác biệt hoặc đảo bit dữ liệu.
+    Thực hiện phép toán bitwise XOR giữa hai toán hạng 32-bit. 
+    Phép toán giúp ích trong việc kiểm tra sự khác biệt hoặc đảo bit dữ liệu.
     
     \begin{figure}[H]
         \centering
@@ -42,4 +46,6 @@ Dựa trên Opcode 3-bit từ khối điều khiển, ALU sẽ kích hoạt các
 \end{itemize}
 
 \textbf{Tín hiệu Zero Flag ($is\_zero$):}
-Một đầu ra quan trọng khác của ALU là tín hiệu $is\_zero$ được tính toán bất đồng bộ. Nếu toàn bộ 32 bit của kết quả đầu ra đều bằng 0, tín hiệu này sẽ được kéo lên mức logic 1. Đây là cơ sở để thực hiện lệnh nhảy có điều kiện \textbf{SKZ} (Skip if Zero).
+Một đầu ra quan trọng khác của ALU là tín hiệu $is\_zero$ được tính toán bất đồng bộ. 
+Nếu toàn bộ 32 bit của kết quả đầu ra đều bằng 0, tín hiệu này sẽ được kéo lên mức logic 1. 
+Đây là cơ sở để thực hiện lệnh nhảy có điều kiện \textbf{SKZ} (Skip if Zero).

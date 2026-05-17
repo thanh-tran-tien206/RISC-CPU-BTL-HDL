@@ -1,5 +1,6 @@
 
-Dự án được tổ chức theo mô hình phân cấp module (\textit{Modular Design}), mỗi khối chức năng tương ứng với một file Verilog riêng biệt, kèm theo Testbench độc lập để kiểm thử từng khối trước khi tích hợp hệ thống.
+Dự án được tổ chức theo mô hình phân cấp module, mỗi khối chức năng tương ứng với một file Verilog riêng biệt, 
+kèm theo các file testbench riêng biệt để kiểm thử từng khối trước khi tích hợp vào hệ thống.
 
 \textbf{Sơ đồ tổ chức thư mục dự án:}
 \begin{verbatim}
@@ -11,8 +12,8 @@ RISC_CPU/
 |   +-- program_counter.v       # Khoi Program Counter (PC)
 |   +-- address_mux.v           # Khoi Address Mux
 |   +-- Instruction_Register.v  # Khoi Instruction Register (IR)
-|   +-- memory.v                # Khoi Memory (Single bidirectional port)
-|   +-- controller.v            # Khoi Controller (FSM 8 trang thai)
+|   +-- memory.v                # Khoi Memory 
+|   +-- controller.v            # Khoi Controller
 |   +-- CPU_Top.v               # File Top-level tich hop toan he thong
 |
 +-- tb/                         # Testbench kiem thu tung khoi

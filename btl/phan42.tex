@@ -1,17 +1,14 @@
-
-Bộ đếm chương trình (Program Counter - PC) đóng vai trò là con trỏ lệnh, quản lý địa chỉ của lệnh sẽ được thực thi tiếp theo trong bộ nhớ. Khối này đảm bảo luồng thực thi của chương trình được duy trì liên tục hoặc thay đổi linh hoạt thông qua các lệnh nhảy.
-
-\begin{lstlisting}[language=Verilog, caption={Ma nguon hien thuc module Program Counter}]
+\begin{lstlisting}[language=Verilog, caption={Program Counter}]
 module program_counter (
     input             clk,      // Xung clock he thong
-    input             rst,      // Reset dong bo (active high)
+    input             rst,      // Reset dong bo
     input             ld_pc,    // Tin hieu nap dia chi moi (lenh JMP)
     input             inc_pc,   // Tin hieu tang dia chi (Fetch/SKZ)
     input      [31:0] d_in,     // Dia chi nap vao tu Instruction Register
     output reg [31:0] pc_out    // Dia chi chuong trinh hien tai
 );
 
-    // Hoat dong tai canh len cua clock (Sequential Logic)
+    // Hoat dong tai canh len cua clock 
     always @(posedge clk) begin
         if (rst) begin
             pc_out <= 32'b0;    // Reset bo dem ve dia chi goc 0
@@ -28,8 +25,10 @@ module program_counter (
 endmodule
 \end{lstlisting}
 
-\textbf{Mô tả logic xử lý :}
+\textbf{Mô tả logic xử lý:}
 \begin{itemize}
-    \item \textbf{Cơ chế tăng địa chỉ:} Chân \texttt{inc\_pc} giờ đây được điều khiển bởi trạng thái \texttt{STORE} của Controller, giúp PC luôn trỏ sẵn sang lệnh tiếp theo ngay khi lệnh hiện tại kết thúc.
-    \item \textbf{Xử lý lệnh rẽ nhánh:} Khi thực hiện lệnh \texttt{SKZ} (Skip if Zero), nếu cờ \texttt{is\_zero} bật, Controller sẽ phát thêm một xung \texttt{inc\_pc} bổ sung, giúp bộ đếm nhảy qua (skip) một địa chỉ lệnh.
+    \item \textbf{Cơ chế tăng địa chỉ:} Chân \texttt{inc\_pc} giờ đây được điều khiển bởi trạng thái \texttt{STORE} của Controller, 
+    giúp PC luôn trỏ sẵn sang lệnh tiếp theo ngay khi lệnh hiện tại kết thúc.
+    \item \textbf{Xử lý lệnh rẽ nhánh:} Khi thực hiện lệnh \texttt{SKZ}, nếu cờ \texttt{is\_zero} bật, Controller sẽ phát thêm một xung \texttt{inc\_pc} bổ sung, 
+    giúp bộ đếm nhảy qua một địa chỉ lệnh.
 \end{itemize}
